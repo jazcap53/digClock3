@@ -4,3 +4,5 @@ simple_play_wave.py
 *.pyc
 *~
 *.sw?
+*.?ml
+.idea
