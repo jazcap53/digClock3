@@ -1,0 +1,6 @@
+double_play_wave.py
+get_time_err_file.txt
+simple_play_wave.py
+*.pyc
+*~
+*.sw?
