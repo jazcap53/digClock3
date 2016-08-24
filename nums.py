@@ -47,57 +47,70 @@ dot5 = '  ' + dot + '  '
 
 # see unicode.org 2300-23ff 2500-25ff
 
-class space(object):
+
+class Space(object):
     lines = [blank, blank, blank, blank, blank, blank, blank, blank, blank]
 
-class colon(object):
-    lines = [blank5, blank5, dot5, blank5, blank5, dot5, blank5, blank5,\
-            blank5]
 
-class one(object):
-    lines = [topTermR, right, right, right, right, right,\
-            right, right, botTermR]
+class Colon(object):
+    lines = [blank5, blank5, dot5, blank5, blank5, dot5, blank5, blank5,
+             blank5]
 
-class two(object):
-    lines = [horizRDn, right, right, right, mid2, left, left,\
-            left, horizLUp]
 
-class three(object):
-    lines = [horizRDn, right, right, right, mid3, right,\
-            right, right, horizRUp]
+class One(object):
+    lines = [topTermR, right, right, right, right, right,
+             right, right, botTermR]
 
-class four(object):
-    lines = [topTermBoth, both, both, both, mid4, right, right,\
-            right, botTermR]
 
-class five(object):
-    lines = [horizLDn, left, left, left, mid5, right, right,\
-            right, horizRUp]
+class Two(object):
+    lines = [horizRDn, right, right, right, mid2, left, left,
+             left, horizLUp]
 
-class six(object):
-    lines = [horizLDn, left, left, left, mid6, both, both,\
-            both, concUp]
 
-class seven(object):
-    lines = [horizRDn, right, right, right, right, right,\
-            right, right, botTermR]
+class Three(object):
+    lines = [horizRDn, right, right, right, mid3, right,
+             right, right, horizRUp]
 
-class eight(object):
-    lines = [concDn, both, both, both, mid8, both, both,\
-            both, concUp]
 
-class nine(object):
-    lines = [concDn, both, both, both, mid9, right, right,\
-            right, botTermR]
+class Four(object):
+    lines = [topTermBoth, both, both, both, mid4, right, right,
+             right, botTermR]
 
-class zero(object):
-    lines = [concDn, both, both, both, both, both, both,\
-            both, concUp]
+
+class Five(object):
+    lines = [horizLDn, left, left, left, mid5, right, right,
+             right, horizRUp]
+
+
+class Six(object):
+    lines = [horizLDn, left, left, left, mid6, both, both,
+             both, concUp]
+
+
+class Seven(object):
+    lines = [horizRDn, right, right, right, right, right,
+             right, right, botTermR]
+
+
+class Eight(object):
+    lines = [concDn, both, both, both, mid8, both, both,
+             both, concUp]
+
+
+class Nine(object):
+    lines = [concDn, both, both, both, mid9, right, right,
+             right, botTermR]
+
+
+class Zero(object):
+    lines = [concDn, both, both, both, both, both, both,
+             both, concUp]
+
 
 if __name__ == '__main__':  # test code -- print all the digits, then 12:46:52
-    digits_arr = [space, nine, eight, seven, six, five, four, three, two, one,\
-            zero, colon]
-    time_arr = [one, two, colon, four, seven, colon, five, two]
+    digits_arr = [Space, Nine, Eight, Seven, Six, Five, Four, Three, Two, One,
+                  Zero, Colon]
+    time_arr = [One, Two, Colon, Four, Seven, Colon, Five, Two]
     print()
     for i in range(9):
         for dig in digits_arr:

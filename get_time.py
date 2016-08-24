@@ -25,9 +25,9 @@ class DigClock(object):
     Play the Westminster Chimes for each quarter hour """
 
     # the characters of the clock face
-    digits = {'0': nums.zero, '1': nums.one, '2': nums.two, '3': nums.three,
-              '4': nums.four, '5': nums.five, '6': nums.six, '7': nums.seven,
-              '8': nums.eight, '9': nums.nine, ':': nums.colon, ' ': nums.space}
+    digits = {'0': nums.Zero, '1': nums.One, '2': nums.Two, '3': nums.Three,
+              '4': nums.Four, '5': nums.Five, '6': nums.Six, '7': nums.Seven,
+              '8': nums.Eight, '9': nums.Nine, ':': nums.Colon, ' ': nums.Space}
 
     def __init__(self):
         self.w_f = None        # .wav file
@@ -119,15 +119,6 @@ class DigClock(object):
             chime_file_name = hr_file_name
         return chime_file_name
 
-    '''
-    @staticmethod
-    def day_to_half_day(hrs):
-        """ Convert '00'..'23' hours to '01'..'12' """
-        bells_as_int = 12 if hrs == '00' or hrs == '12' else int(hrs) % 12
-        bells_as_str = '{:02d}'.format(bells_as_int)
-        return bells_as_str
-    '''
-
     def play_chime(self, chime_file_name):
         """ Play a chime or bell """
         self.w_f = wave.open(chime_file_name, 'rb')
@@ -160,6 +151,7 @@ class DigClock(object):
         """ Return a chunk of audio data, and whether there is more data """
         data = self.w_f.readframes(frame_count)
         return data, pyaudio.paContinue
+
 
 if __name__ == '__main__':
     clk = DigClock()
