@@ -13,6 +13,35 @@ dot = u'\u2981'
 topTip = u'\u257b'
 botTip = u'\u2579'
 
+# for AM, PM
+dblTeeL = u'\u2560'
+dblTeeR = u'\u2563'
+dblTeeCtr = u'\u2566'
+dblTopL = u'\u2554'
+dblTopR = u'\u2557'
+dblCross = u'\u2550'
+dblVert = u'\u2551'
+
+# top rows of A, P, M
+dblConcDn =dblTopL + dblCross + dblTopR
+dblTeeDn = dblTopL + dblTeeCtr + dblTopR
+
+# mid rows of A, P, M
+dblHoriz = dblTeeL + dblCross + dblTeeR
+dbl3Vert = dblVert + dblVert + dblVert
+dbl2Vert = dblVert + ' ' + dblVert
+
+# bot rows of A, P, M
+
+
+
+
+
+
+
+
+
+
 # each row of each numeral of the clock face is a string of length 9
 
 # possible (useful) top rows
@@ -123,3 +152,6 @@ if __name__ == '__main__':  # test code -- print all the digits, then 12:46:52
             print(dig.lines[i], sep='', end='')
         print()
     print()
+    print(dblConcDn + ' ' + dblTeeDn)
+    print(dblHoriz + ' ' + dbl3Vert)
+    print(dbl2Vert + ' ' + dbl2Vert)
