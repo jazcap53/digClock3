@@ -8,10 +8,15 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
+from menu import BGColors, FGColors
 
 LIGHTCYAN = '\033[96m'
+FGPINK = '\033[95m'
+BGGREEN = '\033[42m'
+BGCYAN = '\033[46m'
 ENDC = '\033[0m'
-BOLD = '\033[1m'
+BOLD = '\033[01m'
+BGBLACK = '\033[40m'
 
 HALF_DAY = 'H'
 
@@ -44,8 +49,9 @@ class DigClock(object):
         self.enact_switches()
         try:
             os.system('tput civis')  # make cursor invisible
-            print(LIGHTCYAN)
             print(BOLD)
+            print(FGPINK)
+            print(BGBLACK)
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
             while True:
@@ -94,7 +100,7 @@ class DigClock(object):
             print()
         print()
         print()
-        if HALF_DAY in self.good_args:
+        if HALF_DAY in self.switches:
             self.print_am_pm()
 
     @staticmethod
@@ -129,9 +135,19 @@ class DigClock(object):
         elif secs == '00' and mins == '45':
             chime_file_name = 'chimes/q3mono.wav'
         elif secs == '00' and mins == '00':
+            hrs = self.get_hrs(hrs)
             hr_file_name = 'chimes/h' + hrs + 'mono.wav'
             chime_file_name = hr_file_name
         return chime_file_name
+
+    def get_hrs(self, h_str):
+        if 'H' not in self.switches:
+            return h_str
+        else:
+            # Convert '00'..'23' hours to '01'..'12'
+            hrs_as_int = 12 if h_str == '00' or h_str == '12' else int(h_str) % 12
+            hrs_as_str = '{:02d}'.format(hrs_as_int)
+            return hrs_as_str
 
     def play_chime(self, chime_file_name):
         """ Play a chime or bell """
@@ -158,7 +174,7 @@ class DigClock(object):
         """ Sleep until the number of seconds on the system clock changes """
         old_face = self.face
         while old_face == self.face:
-            time.sleep(.05)
+            time.sleep(.01)
             self.get_face()
 
     def callback(self, in_data, frame_count, time_info, status):
