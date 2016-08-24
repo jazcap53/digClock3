@@ -13,6 +13,8 @@ LIGHTCYAN = '\033[96m'
 ENDC = '\033[0m'
 BOLD = '\033[1m'
 
+HALF_DAY = 'H'
+
 # for more colors see e.g.
 # http://www.unknownerror.org/opensource/mrmrs/colors/q/stackoverflow/287871/
 #        print-in-terminal-with-colors-using-python
@@ -28,22 +30,24 @@ class DigClock(object):
               '8': nums.eight, '9': nums.nine, ':': nums.colon, ' ': nums.space}
 
     def __init__(self):
-        self.w_f = None     # w_f: .wav file
-        self.stream = None  # stream: to which wave file is output
-        self.face = None    # face: clock face
-        self.p_aud = None   # p_aud: instance of PyAudio
+        self.w_f = None        # .wav file
+        self.stream = None     # stream to which wave file is output
+        self.face = None       # clock face
+        self.p_aud = None      # instance of PyAudio
         self.sys_args = [arg for arg in sys.argv[1:]]
-        self.arg_str = None
+        self.good_args = 'hH'  # holds permitted switches
+        self.switches = None   # holds filtered switches
 
     def run_clock(self):
         """ Run the clock and chimes """
+        self.read_switches()
+        self.enact_switches()
         try:
             os.system('tput civis')  # make cursor invisible
             print(LIGHTCYAN)
             print(BOLD)
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
-            self.face = ' ' * 3 + time.strftime("%H:%M:%S")
             while True:
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
@@ -55,11 +59,33 @@ class DigClock(object):
             os.system('tput cnorm')  # restore normal cursor
             self.p_aud.terminate()
 
+    def read_switches(self):
+        args_ok = True
+        hyphen_str = ''.join([s[0] for s in self.sys_args])
+        arg_str = ''.join([s[1:] for s in self.sys_args])
+        if hyphen_str != '-' * len(self.sys_args):
+            print('Each command-line argument must begin with a hyphen.')
+            args_ok = False
+        for c in arg_str:
+            if c not in self.good_args:
+                args_ok = False
+                print('Unrecognized option: \'{}\''.format(c))
+        if not args_ok:
+            sys.exit(0)
+        else:
+            self.switches = arg_str
+
+    def enact_switches(self):
+        if HALF_DAY in self.switches:
+            self.face = ' ' * 3 + time.strftime("%I:%M:%S")
+        else:
+            self.face = ' ' * 3 + time.strftime("%H:%M:%S")
+
     def print_face(self):
         """ Display the face of the clock """
         _ = os.system('clear')
         print('\n' * 7)
-        self.face = ' ' * 3 + time.strftime("%H:%M:%S")
+        # self.face = ' ' * 3 + time.strftime("%H:%M:%S")
         for i in range(9):  # each digit of the clock has nine rows
             for ch in self.face:
                 print(self.digits[ch].lines[i], sep='', end='')
@@ -87,18 +113,18 @@ class DigClock(object):
         elif secs == '00' and mins == '45':
             chime_file_name = 'chimes/q3mono.wav'
         elif secs == '00' and mins == '00':
-            # convert '00'..'23' hrs to '01'..'12'
-            this_hr = self.day_to_half_day(hrs)
-            hr_file_name = 'chimes/h' + this_hr + 'mono.wav'
+            hr_file_name = 'chimes/h' + hrs + 'mono.wav'
             chime_file_name = hr_file_name
         return chime_file_name
 
+    '''
     @staticmethod
     def day_to_half_day(hrs):
         """ Convert '00'..'23' hours to '01'..'12' """
         bells_as_int = 12 if hrs == '00' or hrs == '12' else int(hrs) % 12
         bells_as_str = '{:02d}'.format(bells_as_int)
         return bells_as_str
+    '''
 
     def play_chime(self, chime_file_name):
         """ Play a chime or bell """
@@ -126,7 +152,10 @@ class DigClock(object):
         old_face = self.face
         while old_face == self.face:
             time.sleep(.05)
-            self.face = ' ' * 3 + time.strftime("%H:%M:%S")
+            if HALF_DAY in self.switches:
+                self.face = ' ' * 3 + time.strftime("%I:%M:%S")
+            else:
+                self.face = ' ' * 3 + time.strftime("%H:%M:%S")
 
     def callback(self, in_data, frame_count, time_info, status):
         """ Return a chunk of audio data, and whether there is more data """
