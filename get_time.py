@@ -20,6 +20,7 @@ BGBLACK = '\033[40m'
 
 HALF_DAY = 'H'
 
+# TODO: remove once menu is implemented
 # for more colors see e.g.
 # http://www.unknownerror.org/opensource/mrmrs/colors/q/stackoverflow/287871/
 #        print-in-terminal-with-colors-using-python
@@ -141,7 +142,7 @@ class DigClock(object):
         return chime_file_name
 
     def get_hrs(self, h_str):
-        if 'H' not in self.switches:
+        if 'H' in self.switches:
             return h_str
         else:
             # Convert '00'..'23' hours to '01'..'12'
