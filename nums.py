@@ -21,6 +21,7 @@ dblTopL = u'\u2554'
 dblTopR = u'\u2557'
 dblCross = u'\u2550'
 dblVert = u'\u2551'
+dblBotR = u'\u255d'
 
 # top rows of A, P, M
 dblConcDn =dblTopL + dblCross + dblTopR
@@ -28,12 +29,13 @@ dblTeeDn = dblTopL + dblTeeCtr + dblTopR
 
 # mid rows of A, P, M
 dblHoriz = dblTeeL + dblCross + dblTeeR
+dblHorizRUp = dblTeeL + dblCross + dblBotR
 dbl3Vert = dblVert + dblVert + dblVert
-dbl2Vert = dblVert + ' ' + dblVert
+
 
 # bot rows of A, P, M
-
-
+dbl2Vert = dblVert + ' ' + dblVert
+dblLVert = dblVert + '  '
 
 
 
@@ -153,5 +155,5 @@ if __name__ == '__main__':  # test code -- print all the digits, then 12:46:52
         print()
     print()
     print(' ' * 25 + dblConcDn + ' ' + dblTeeDn)
-    print(' ' * 25 + dblHoriz + ' ' + dbl3Vert)
-    print(' ' * 25 + dbl2Vert + ' ' + dbl2Vert)
+    print(' ' * 25 + dblHorizRUp + ' ' + dbl3Vert)
+    print(' ' * 25 + dblLVert + ' ' + dbl3Vert)

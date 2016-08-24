@@ -95,9 +95,19 @@ class DigClock(object):
         print()
         print()
         if HALF_DAY in self.good_args:
+            self.print_am_pm()
+
+    @staticmethod
+    def print_am_pm(self):
+        """ In half-day mode, print AM or PM """
+        if time.strftime('%p')[0] == 'A':
             print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
             print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
             print(' ' * 83 + nums.dbl2Vert + ' ' + nums.dbl2Vert)
+        else:
+            print(' ' * 25 + nums.dblConcDn + ' ' + nums.dblTeeDn)
+            print(' ' * 25 + nums.dblHorizRUp + ' ' + nums.dbl3Vert)
+            print(' ' * 25 + nums.dblLVert + ' ' + nums.dbl3Vert)
 
     def check_for_chimes(self):
         """ If a chime or bell should begin playing now,
