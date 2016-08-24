@@ -95,9 +95,9 @@ class DigClock(object):
         print()
         print()
         if HALF_DAY in self.good_args:
-            print(nums.dblConcDn + ' ' + nums.dblTeeDn)
-            print(nums.dblHoriz + ' ' + nums.dbl3Vert)
-            print(nums.dbl2Vert + ' ' + nums.dbl2Vert)
+            print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
+            print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
+            print(' ' * 83 + nums.dbl2Vert + ' ' + nums.dbl2Vert)
 
     def check_for_chimes(self):
         """ If a chime or bell should begin playing now,
