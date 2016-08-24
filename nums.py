@@ -156,4 +156,7 @@ if __name__ == '__main__':  # test code -- print all the digits, then 12:46:52
     print()
     print(' ' * 25 + dblConcDn + ' ' + dblTeeDn)
     print(' ' * 25 + dblHorizRUp + ' ' + dbl3Vert)
-    print(' ' * 25 + dblLVert + ' ' + dbl3Vert)
+    print(' ' * 25 + dblLVert + ' ' + dbl2Vert)
+    print(' ' * 25 + dblConcDn + ' ' + dblTeeDn)
+    print(' ' * 25 + dblHoriz + ' ' + dbl3Vert)
+    print(' ' * 25 + dbl2Vert + ' ' + dbl2Vert)
