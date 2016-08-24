@@ -49,6 +49,7 @@ class DigClock(object):
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
             while True:
+                self.get_face()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
                 if chime_file_name is not None:
@@ -76,16 +77,17 @@ class DigClock(object):
             self.switches = arg_str
 
     def enact_switches(self):
-        if HALF_DAY in self.switches:
-            self.face = ' ' * 3 + time.strftime("%I:%M:%S")
-        else:
-            self.face = ' ' * 3 + time.strftime("%H:%M:%S")
+        pass
+
+    def get_face(self):
+        self.face = ' ' * 3
+        time_str = "%I:%M:%S" if (HALF_DAY in self.switches) else "%H:%M:%S"
+        self.face += time.strftime(time_str)
 
     def print_face(self):
         """ Display the face of the clock """
         _ = os.system('clear')
         print('\n' * 7)
-        # self.face = ' ' * 3 + time.strftime("%H:%M:%S")
         for i in range(9):  # each digit of the clock has nine rows
             for ch in self.face:
                 print(self.digits[ch].lines[i], sep='', end='')
@@ -99,7 +101,7 @@ class DigClock(object):
         chime_file_name = None
         if not self.face:
             return None
-        # face is 3 spaces plus time as 'hh:mm:ss'
+        # face is 3 spaces plus time as hh:mm:ss
         secs = self.face[9:]
         mins = self.face[6:8]
         hrs = self.face[3:5]
@@ -152,10 +154,7 @@ class DigClock(object):
         old_face = self.face
         while old_face == self.face:
             time.sleep(.05)
-            if HALF_DAY in self.switches:
-                self.face = ' ' * 3 + time.strftime("%I:%M:%S")
-            else:
-                self.face = ' ' * 3 + time.strftime("%H:%M:%S")
+            self.get_face()
 
     def callback(self, in_data, frame_count, time_info, status):
         """ Return a chunk of audio data, and whether there is more data """
