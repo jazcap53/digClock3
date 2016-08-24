@@ -8,7 +8,7 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
-from menu import BGColors, FGColors
+from menu import FGColors, BGColors
 
 LIGHTCYAN = '\033[96m'
 FGPINK = '\033[95m'
@@ -34,6 +34,10 @@ class DigClock(object):
     digits = {'0': nums.Zero, '1': nums.One, '2': nums.Two, '3': nums.Three,
               '4': nums.Four, '5': nums.Five, '6': nums.Six, '7': nums.Seven,
               '8': nums.Eight, '9': nums.Nine, ':': nums.Colon, ' ': nums.Space}
+
+    # the color options
+    foreground_colors = FGColors
+    background_colors = BGColors
 
     def __init__(self):
         self.w_f = None        # .wav file

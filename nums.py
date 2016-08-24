@@ -1,5 +1,7 @@
 from __future__ import print_function
 
+""" see unicode.org 2300-23ff 2500-25ff """
+
 # the eleven unicode characters used to draw the clock face
 emdash = u'\u2501'
 vert = u'\u2503'
@@ -13,53 +15,15 @@ dot = u'\u2981'
 topTip = u'\u257b'
 botTip = u'\u2579'
 
-# for AM, PM
-dblTeeL = u'\u2560'
-dblTeeR = u'\u2563'
-dblTeeCtr = u'\u2566'
-dblTopL = u'\u2554'
-dblTopR = u'\u2557'
-dblCross = u'\u2550'
-dblVert = u'\u2551'
-dblBotR = u'\u255d'
-
-# top rows of A, P, M
-dblConcDn =dblTopL + dblCross + dblTopR
-dblTeeDn = dblTopL + dblTeeCtr + dblTopR
-
-# mid rows of A, P, M
-dblHoriz = dblTeeL + dblCross + dblTeeR
-dblHorizRUp = dblTeeL + dblCross + dblBotR
-dbl3Vert = dblVert + dblVert + dblVert
-
-
-# bot rows of A, P, M
-dbl2Vert = dblVert + ' ' + dblVert
-dblLVert = dblVert + '  '
-
-
-
-
-
-
-
-
 # each row of each numeral of the clock face is a string of length 9
-
-# possible (useful) top rows
+# possible top rows
 topTermR = ' ' * 7 + topTip + ' '  # term: terminating
 topTermBoth = ' ' + topTip + ' ' * 5 + topTip + ' '
 concDn = ' ' + topL + emdash * 5 + topR + ' '
 horizLDn = ' ' + topL + emdash * 5 + '  '
 horizRDn = '  ' + emdash * 5 + topR + ' '
 
-# possible (useful) bottom rows
-botTermR = ' ' * 7 + botTip + ' '
-concUp = ' ' + botL + emdash * 5 + botR + ' '  # conc: concave
-horizLUp = ' ' + botL + emdash * 5 + '  '
-horizRUp = '  ' + emdash * 5 + botR + ' '
-
-# possible (useful) center rows
+# possible center rows
 mid2 = ' ' + topL + emdash * 5 + botR + ' '
 mid3 = '  ' + emdash * 5 + teeL + ' '
 mid4 = ' ' + botL + emdash * 5 + teeL + ' '
@@ -67,6 +31,12 @@ mid5 = ' ' + botL + emdash * 5 + topR + ' '
 mid6 = ' ' + teeR + emdash * 5 + topR + ' '
 mid8 = ' ' + teeR + emdash * 5 + teeL + ' '
 mid9 = ' ' + botL + emdash * 5 + teeL + ' '
+
+# possible bottom rows
+botTermR = ' ' * 7 + botTip + ' '
+concUp = ' ' + botL + emdash * 5 + botR + ' '  # conc: concave
+horizLUp = ' ' + botL + emdash * 5 + '  '
+horizRUp = '  ' + emdash * 5 + botR + ' '
 
 # other useful rows
 left = ' ' + vert + ' ' * 7
@@ -76,7 +46,29 @@ blank = ' ' * 9
 blank5 = ' ' * 5
 dot5 = '  ' + dot + '  '
 
-# see unicode.org 2300-23ff 2500-25ff
+# the eight unicode characters used to draw AM and PM
+dblTeeL = u'\u2560'
+dblTeeR = u'\u2563'
+dblTeeCtr = u'\u2566'
+dblTopL = u'\u2554'
+dblTopR = u'\u2557'
+dblCross = u'\u2550'
+dblVert = u'\u2551'
+dblBotR = u'\u255d'
+
+# each row of each character in AM or PM is a string of length 3
+# possible top rows of A, P, M
+dblConcDn = dblTopL + dblCross + dblTopR
+dblTeeDn = dblTopL + dblTeeCtr + dblTopR
+
+# possible center rows of A, P, M
+dblHoriz = dblTeeL + dblCross + dblTeeR
+dblHorizRUp = dblTeeL + dblCross + dblBotR
+dbl3Vert = dblVert + dblVert + dblVert
+
+# possible bottom rows of A, P, M
+dbl2Vert = dblVert + ' ' + dblVert
+dblLVert = dblVert + '  '
 
 
 class Space(object):
