@@ -8,7 +8,7 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
-from menu import FGColors, BGColors
+from menu import display_menu, FGColors, BGColors
 
 LIGHTCYAN = '\033[96m'
 FGPINK = '\033[95m'
@@ -35,7 +35,7 @@ class DigClock(object):
               '4': nums.Four, '5': nums.Five, '6': nums.Six, '7': nums.Seven,
               '8': nums.Eight, '9': nums.Nine, ':': nums.Colon, ' ': nums.Space}
 
-    # the color options
+    # the color options  TODO: remove these three lines
     foreground_colors = FGColors
     background_colors = BGColors
 
@@ -47,6 +47,7 @@ class DigClock(object):
         self.sys_args = [arg for arg in sys.argv[1:]]
         self.good_args = 'hH'  # holds permitted switches
         self.switches = None   # holds filtered switches
+        display_menu()
 
     def run_clock(self):
         """ Run the clock and chimes """
