@@ -45,7 +45,9 @@ class Menu:
         (' 2', 'SILENT')
     ]
 
-    defaults = [7, 1, 2, 1]
+    defaults = [(' 7', 'LIGHTCYAN', '\033[96m'), (' 1', 'BLACK', '\033[40m'),
+                (' 2', '12-HOUR'), (' 1', 'CHIME')]
+    # defaults = [7, 1, 2, 1]
 
     def __init__(self):
         self.header = 'Welcome to DigClock'
@@ -56,19 +58,24 @@ class Menu:
         """ Call display_menu() for each menu """
         menus = [Menu.FGColors,     Menu.BGColors,
                  Menu.DisplayModes, Menu.ChimeModes]
-        chosen = [['text color', None],   ['background color', None],
-                  ['display mode', None], ['chime mode', None]]
+        chosen = [['text color', None, None],   ['background color', None, None],
+                  ['display mode', None, None], ['chime mode', None, None]]
         for i in range(len(menus)):
             while True:
                 self.display_menu(menus[i], chosen)
                 sel = self.get_selection()
-                valid = self.validate_selection(sel, len(menus[i]))
+                valid = self.validate_selection(sel, len(menus[i]), i)
                 if valid:
                     break
             if not sel.strip():
-                chosen[i][1] = Menu.defaults[i]
+                chosen[i][1] = int(Menu.defaults[i][0])
+                chosen[i][2] = Menu.defaults[i][1]
             else:
                 chosen[i][1] = int(sel)
+                if menus[i][int(sel)][1].endswith(' (*)'):
+                    chosen[i][2] = menus[i][int(sel)][1][: -4]
+                else:
+                    chosen[i][2] = menus[i][int(sel)][1]
 
     def display_menu(self, this_menu, chosen):
         """
@@ -85,16 +92,17 @@ class Menu:
         print(self.question + this_menu[0][1] + ':\n')
         for item in this_menu[1:]:
             print('{:2}) {:10}'.format(item[0], item[1]))
+        print('\n')
         for item in chosen:
             if item[1]:
-                print('Your {}: {}'.format(item[0], item[1]))  # TODO: get menu item name instead of number
+                print('Your {}: {}'.format(item[0], item[2]))
 
     def get_selection(self):
-        sel = raw_input('\n' + self.footer + ' ')
+        sel = raw_input('\n\n' + self.footer + ' ')
         return sel
 
     @staticmethod
-    def validate_selection(sel, menu_len):
+    def validate_selection(sel, menu_len, menu_ix):
         """
         :param sel: the raw user input
         :param menu_len: a two-item menu will have entries 0, 1, 2
