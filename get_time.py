@@ -8,7 +8,7 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
-from menu import display_menu, FGColors, BGColors
+import menu
 
 LIGHTCYAN = '\033[96m'
 FGPINK = '\033[95m'
@@ -36,8 +36,8 @@ class DigClock(object):
               '8': nums.Eight, '9': nums.Nine, ':': nums.Colon, ' ': nums.Space}
 
     # the color options  TODO: remove these three lines
-    foreground_colors = FGColors
-    background_colors = BGColors
+    foreground_colors = menu.FGColors
+    background_colors = menu.BGColors
 
     def __init__(self):
         self.w_f = None        # .wav file
@@ -47,7 +47,7 @@ class DigClock(object):
         self.sys_args = [arg for arg in sys.argv[1:]]
         self.good_args = 'hH'  # holds permitted switches
         self.switches = None   # holds filtered switches
-        display_menu()
+        menu.cycle_menus()
 
     def run_clock(self):
         """ Run the clock and chimes """
@@ -56,7 +56,7 @@ class DigClock(object):
         try:
             os.system('tput civis')  # make cursor invisible
             print(BOLD)
-            print(FGPINK)
+            print(LIGHTCYAN)
             print(BGBLACK)
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
