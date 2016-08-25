@@ -1,4 +1,5 @@
 import os
+import time
 
 
 class Menu:
@@ -48,6 +49,10 @@ class Menu:
     defaults = [(' 7', 'LIGHTCYAN', '\033[96m'), (' 1', 'BLACK', '\033[40m'),
                 (' 2', '12-HOUR'), (' 1', 'CHIME')]
     # defaults = [7, 1, 2, 1]
+    menus = [FGColors, BGColors, DisplayModes, ChimeModes]
+
+    chosen = [['text color', None, None], ['background color', None, None],
+              ['display mode', None, None], ['chime mode', None, None]]
 
     def __init__(self):
         self.header = 'Welcome to DigClock'
@@ -56,26 +61,32 @@ class Menu:
 
     def cycle_menus(self):
         """ Call display_menu() for each menu """
-        menus = [Menu.FGColors,     Menu.BGColors,
-                 Menu.DisplayModes, Menu.ChimeModes]
-        chosen = [['text color', None, None],   ['background color', None, None],
-                  ['display mode', None, None], ['chime mode', None, None]]
-        for i in range(len(menus)):
+        for i in range(len(Menu.menus)):
             while True:
-                self.display_menu(menus[i], chosen)
+                self.display_menu(Menu.menus[i], Menu.chosen)
                 sel = self.get_selection()
-                valid = self.validate_selection(sel, len(menus[i]), i)
+                valid = self.validate_selection(sel, len(Menu.menus[i]))
+                '''
+                if i == 1:
+                    bkgnd_ok = self.check_bkgnd_ne_fgnd(sel)
+                    if not bkgnd_ok:
+                        print('\033[41m')
+                        print('BACKGROUND COLOR MUST NOT MATCH FOREGROUND COLOR')
+                        time.sleep(2)
+                        print('\033[40m')
+                        valid = False  # TODO: ugly -- fix?
+                '''
                 if valid:
                     break
             if not sel.strip():
-                chosen[i][1] = int(Menu.defaults[i][0])
-                chosen[i][2] = Menu.defaults[i][1]
+                Menu.chosen[i][1] = int(Menu.defaults[i][0])
+                Menu.chosen[i][2] = Menu.defaults[i][1]
             else:
-                chosen[i][1] = int(sel)
-                if menus[i][int(sel)][1].endswith(' (*)'):
-                    chosen[i][2] = menus[i][int(sel)][1][: -4]
+                Menu.chosen[i][1] = int(sel)
+                if Menu.menus[i][int(sel)][1].endswith(' (*)'):
+                    Menu.chosen[i][2] = Menu.menus[i][int(sel)][1][: -4]
                 else:
-                    chosen[i][2] = menus[i][int(sel)][1]
+                    Menu.chosen[i][2] = Menu.menus[i][int(sel)][1]
 
     def display_menu(self, this_menu, chosen):
         """
@@ -102,7 +113,7 @@ class Menu:
         return sel
 
     @staticmethod
-    def validate_selection(sel, menu_len, menu_ix):
+    def validate_selection(sel, menu_len):
         """
         :param sel: the raw user input
         :param menu_len: a two-item menu will have entries 0, 1, 2
@@ -123,5 +134,14 @@ class Menu:
             ret = True
         return ret
 
-    def save_selection(self, s):
-        pass  # TODO: N.Y.I
+    @staticmethod
+    def check_bkgnd_ne_fgnd(sel):
+        if Menu.menus[1][int(sel)][1].endswith(' (*)'):
+            bkgnd_val = Menu.menus[1][int(sel)][1][:-4]
+        else:
+            bkgnd_val = Menu.menus[1][int(sel)][1]
+        fgnd_val = Menu.chosen[0][2]
+        if fgnd_val == bkgnd_val:
+            return False
+        else:
+            return True
