@@ -41,19 +41,21 @@ ChimeModes = [
 
 
 def cycle_menus():
-    headers = ['Welcome to DigClock']
-    messages = ['Please select a text color']
-    choices = [FGColors]
-    chosen = [(None, None)]
+    header = 'Welcome to DigClock'
+    messages = ['Please select a text color',
+                'Please select a background color',
+                'Please select a display mode',
+                'Please select a chime mode']
+    choices = [FGColors, BGColors, DisplayModes, ChimeModes]
+    chosen = [(None, None), (None, None), (None, None), (None, None)]
     footer = 'Your choice, or \'Enter\' for default (*):'
-    for i in range(1):
-        display_menu(headers[i], messages[i], choices[i], chosen[i], footer)
+    for i in range(4):
+        display_menu(header, messages[i], choices[i], chosen[i], footer)
 
 
 def display_menu(header, message, choices, chosen, footer):
     os.system('clear')
-    if header:
-        print(header + '\n')
+    print(header + '\n')
     print(message + '\n')
     for item in choices:
         print('{:2} {:10}'.format(item[0], item[1]))
