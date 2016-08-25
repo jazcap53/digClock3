@@ -1,5 +1,4 @@
 import os
-import sys
 
 
 class Menu:
@@ -88,7 +87,7 @@ class Menu:
             print('{:2}) {:10}'.format(item[0], item[1]))
         for item in chosen:
             if item[1]:
-                print('Your {}: {}'.format(item[0], item[1]))
+                print('Your {}: {}'.format(item[0], item[1]))  # TODO: get menu item name instead of number
 
     def get_selection(self):
         sel = raw_input('\n' + self.footer + ' ')
