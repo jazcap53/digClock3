@@ -85,11 +85,9 @@ class Menu:
                 Menu.chosen[i][1] = int(Menu.defaults[i][0])
                 Menu.chosen[i][2] = Menu.defaults[i][1]
             else:
-                Menu.chosen[i][1] = int(sel)
-                if Menu.menus[i][int(sel)][1].endswith(' (*)'):
-                    Menu.chosen[i][2] = Menu.menus[i][int(sel)][1][: -4]
-                else:
-                    Menu.chosen[i][2] = Menu.menus[i][int(sel)][1]
+                sel_as_int = int(sel)
+                Menu.chosen[i][1] = sel_as_int
+                Menu.chosen[i][2] = self.clean_default_str(Menu.menus[i][sel_as_int][1])
 
     def display_menu(self, this_menu, chosen):
         """
