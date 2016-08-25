@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 
 
 class Menu:
@@ -65,8 +66,10 @@ class Menu:
             while True:
                 self.display_menu(Menu.menus[i], Menu.chosen)
                 sel = self.get_selection()
+                if not sel:
+                    sel = Menu.defaults[i][0]
                 valid = self.validate_selection(sel, len(Menu.menus[i]))
-                '''
+
                 if i == 1:
                     bkgnd_ok = self.check_bkgnd_ne_fgnd(sel)
                     if not bkgnd_ok:
@@ -75,7 +78,7 @@ class Menu:
                         time.sleep(2)
                         print('\033[40m')
                         valid = False  # TODO: ugly -- fix?
-                '''
+
                 if valid:
                     break
             if not sel.strip():
@@ -134,14 +137,15 @@ class Menu:
             ret = True
         return ret
 
-    @staticmethod
-    def check_bkgnd_ne_fgnd(sel):
-        if Menu.menus[1][int(sel)][1].endswith(' (*)'):
-            bkgnd_val = Menu.menus[1][int(sel)][1][:-4]
-        else:
-            bkgnd_val = Menu.menus[1][int(sel)][1]
+    def check_bkgnd_ne_fgnd(self, sel):
+        bkgnd_val = self.clean_default_str(Menu.menus[1][int(sel)][1])
         fgnd_val = Menu.chosen[0][2]
         if fgnd_val == bkgnd_val:
             return False
-        else:
-            return True
+        return True
+
+    @staticmethod
+    def clean_default_str(d_str):
+        if d_str.endswith(' (*)'):
+            return d_str[: -4]
+        return d_str
