@@ -1,6 +1,5 @@
 import os
 import time
-import sys
 import menu_data
 
 
@@ -14,14 +13,14 @@ class Menu:
         self.source = source
         self.name = None
         self.description = None
-        self.entries = [None]  # make self.entries 1-indexed
+        self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.chosen = chosen[:]
 
     def run(self):
         self.read()
         self.display()
-#        selection = None
+        selection = None  # present to make PyCharm happy
         while True:
             selection = self.get_selection()
             test_1 = self.validate_selection(selection, len(self.entries))
@@ -112,7 +111,7 @@ class Menu:
         else:
             sel_as_int = int(sel)  # sel has already been strip()ped
             bkgnd_val = self.entries[sel_as_int][1].rstrip(' ()*')
-        fgnd_val = self.chosen[0][1]
+        fgnd_val = self.chosen[0][2]
         if fgnd_val == bkgnd_val:
             return False
         return True
@@ -127,6 +126,10 @@ def cycle_menus():  # TODO: cleanup
         this_menu.run()  # display menu, get selection, validate selection
         if this_menu.chosen:
             global_chosen.append(this_menu.chosen[-1])
+    os.system('clear')
+    for item in global_chosen:  # self.chosen is empty for first menu
+        print('Your {}: {}'.format(item[0], item[2]))
+    _ = raw_input('\n\nPress \'Enter\' to start clock...')
 
 
 if __name__ == '__main__':
