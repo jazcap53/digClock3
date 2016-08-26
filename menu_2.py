@@ -129,7 +129,7 @@ def cycle_menus():
     for item in global_chosen:  # self.chosen is empty for first menu
         print('Your {}: {}'.format(item[0], item[2]))
     _ = raw_input('\n\nPress \'Enter\' to start clock...')
-
+    return global_chosen
 
 if __name__ == '__main__':
     cycle_menus()
