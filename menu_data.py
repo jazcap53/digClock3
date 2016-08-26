@@ -1,7 +1,5 @@
 first = [
-    'FGColors',
     'text color',
-#    (' 0', None,            None),
     (' 1', 'BLACK',         '\033[30m'),
     (' 2', 'BLUE',          '\033[34m'),
     (' 3', 'CYAN',          '\033[36m'),
@@ -20,9 +18,7 @@ first = [
 ]
 
 second = [
-    'BGColors',
     'background color',
-#    (' 0',  None,       None),
     (' 1', 'BLACK (*)', '\033[40m'),
     (' 2', 'BLUE',      '\033[44m'),
     (' 3', 'CYAN',      '\033[46m'),
@@ -34,17 +30,13 @@ second = [
 ]
 
 third = [
-    'DisplayModes',
     'display mode',
-#    (' 0', None),
     (' 1', '24-HOUR'),
     (' 2', '12-HOUR (*)'),
 ]
 
 fourth = [
-    'ChimeModes',
     'chime mode',
-#    (' 0', None),
     (' 1', 'CHIME (*)'),
     (' 2', 'SILENT')
 ]

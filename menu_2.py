@@ -11,7 +11,6 @@ class Menu:
 
     def __init__(self, source, chosen):
         self.source = source
-        self.name = None
         self.description = None
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
@@ -40,13 +39,11 @@ class Menu:
         enum_menu_data = enumerate(self.source)
         for ix, item in enum_menu_data:
             if ix == 0:
-                self.name = item[:]
-            elif ix == 1:
                 self.description = item[:]
             else:
                 self.entries.append(item[:])
                 # remove trailing ' (*)' from default selection
-                if item[1] and item[1].endswith(' ()*'):
+                if item[1] and item[1].endswith(' (*)'):
                     self.default = list(item)
                     self.default[1] = self.default[1].rstrip(' ()*')
         self.source = None  # gc self.source
@@ -113,7 +110,6 @@ class Menu:
                     list_to_append += [short_entry]
                 else:
                     list_to_append += [entry]
-            # list_to_append = description_as_list + list(self.entries[int(sel)])
             self.chosen.append(list_to_append)
         else:
             list_to_append = description_as_list + self.default
