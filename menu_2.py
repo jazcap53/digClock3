@@ -36,8 +36,17 @@ class Menu:
             if test_1 and test_2:  # both tests passed
                 break
         description_as_list = [self.description]
+        # TODO: clean this up
         if selection:
-            list_to_append = description_as_list + self.entries[int(selection)]
+            list_to_append = description_as_list
+            entry_enum = enumerate(self.entries[int(selection)])
+            for ix, entry in entry_enum:
+                if ix == 1:
+                    short_entry = entry.rstrip(' ()*')
+                    list_to_append += [short_entry]
+                else:
+                    list_to_append += [entry]
+            # list_to_append = description_as_list + list(self.entries[int(selection)])
             self.chosen.append(list_to_append)
         else:
             list_to_append = description_as_list + self.default
