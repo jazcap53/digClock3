@@ -49,7 +49,7 @@ class Menu:
 
     defaults = [(' 7', 'LIGHTCYAN', '\033[96m'), (' 1', 'BLACK', '\033[40m'),
                 (' 2', '12-HOUR'), (' 1', 'CHIME')]
-    # defaults = [7, 1, 2, 1]
+
     menus = [FGColors, BGColors, DisplayModes, ChimeModes]
 
     chosen = [['text color', None, None], ['background color', None, None],
@@ -60,7 +60,7 @@ class Menu:
         self.question = 'Please select a '
         self.footer = 'Your choice, or \'Enter\' for default (*):'
 
-    def cycle_menus(self):
+    def cycle_menus(self):  # TODO: cleanup
         """ Call display_menu() for each menu """
         for i in range(len(Menu.menus)):
             while True:
@@ -68,18 +68,16 @@ class Menu:
                 sel = self.get_selection()
                 if not sel:
                     sel = Menu.defaults[i][0]
-                valid = self.validate_selection(sel, len(Menu.menus[i]))
-
-                if i == 1:
+                select_val_ok = self.validate_selection(sel, len(Menu.menus[i]))
+                bkgnd_ok = True
+                if select_val_ok and i == 1:
                     bkgnd_ok = self.check_bkgnd_ne_fgnd(sel)
                     if not bkgnd_ok:
                         print('\033[41m')
                         print('BACKGROUND COLOR MUST NOT MATCH FOREGROUND COLOR')
                         time.sleep(2)
                         print('\033[40m')
-                        valid = False  # TODO: ugly -- fix?
-
-                if valid:
+                if select_val_ok and bkgnd_ok:
                     break
             if not sel.strip():
                 Menu.chosen[i][1] = int(Menu.defaults[i][0])
