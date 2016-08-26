@@ -7,16 +7,41 @@ import menu_data
 class Menu:
 
     header = 'Welcome to DigClock'
-    question = 'Please select a '
+    message = 'Please select a '
     footer = 'Your choice, or \'Enter\' for default (*):'
 
-    def __init__(self, source):
+    def __init__(self, source, chosen):
         self.source = source
         self.name = None
         self.description = None
-        self.data = [None]  # make self.data 1-indexed
+        self.entries = [None]  # make self.entries 1-indexed
         self.default = None
-        self.chosen = []
+        self.chosen = chosen[:]
+
+    def run(self):
+        self.read()
+        self.display()
+#        selection = None
+        while True:
+            selection = self.get_selection()
+            test_1 = self.validate_selection(selection, len(self.entries))
+            test_2 = True  # may be set to False
+            if self.description == 'background color':
+                test_2 = self.check_bkgnd_ne_fgnd(selection)
+                if not test_2:  # bkgrnd and fgrnd colors are the same
+                    print('\033[41m')
+                    print('BACKGROUND COLOR MUST NOT MATCH FOREGROUND COLOR')
+                    time.sleep(2)
+                    print('\033[40m')
+            if test_1 and test_2:  # both tests passed
+                break
+        description_as_list = [self.description]
+        if selection:
+            list_to_append = description_as_list + self.entries[int(selection)]
+            self.chosen.append(list_to_append)
+        else:
+            list_to_append = description_as_list + self.default
+            self.chosen.append(list_to_append)
 
     def read(self):
         enum_menu_data = enumerate(self.source)
@@ -26,79 +51,25 @@ class Menu:
             elif ix == 1:
                 self.description = item[:]
             else:
-                self.data.append(item[:])
-                if item[1].ends_with(' (*)'):
+                self.entries.append(item[:])
+                if item[1] and item[1].endswith(' (*)'):  # TODO: explain
                     self.default = list(item)
-                    self.default[1] = self.default[1][:-4]
+                    self.default[1] = self.default[1].rstrip(' (*)')
         self.source = None  # gc self.source
 
-
-
-
-
-
-
-
-
-    defaults = [(' 7', 'LIGHTCYAN', '\033[96m'), (' 1', 'BLACK', '\033[40m'),
-                (' 2', '12-HOUR'), (' 1', 'CHIME')]
-
-    menus = [FGColors, BGColors, DisplayModes, ChimeModes]
-
-    chosen = [['text color', None, None], ['background color', None, None],
-              ['display mode', None, None], ['chime mode', None, None]]
-
-    def __init__(self):
-        self.header =   'Welcome to DigClock'
-        self.question = 'Please select a '
-        self.footer =   'Your choice, or \'Enter\' for default (*):'
-
-    def cycle_menus(self):  # TODO: cleanup
-        """ Call display_menu() for each menu """
-        for i in range(len(Menu.menus)):
-            while True:
-                self.display_menu(Menu.menus[i], Menu.chosen)
-                sel = self.get_selection()
-                if not sel:
-                    sel = Menu.defaults[i][0]
-                select_val_ok = self.validate_selection(sel, len(Menu.menus[i]))
-                bkgnd_ok = True
-                if select_val_ok and i == 1:
-                    bkgnd_ok = self.check_bkgnd_ne_fgnd(sel)
-                    if not bkgnd_ok:
-                        print('\033[41m')
-                        print('BACKGROUND COLOR MUST NOT MATCH FOREGROUND COLOR')
-                        time.sleep(2)
-                        print('\033[40m')
-                if select_val_ok and bkgnd_ok:
-                    break
-            if not sel.strip():
-                Menu.chosen[i][1] = int(Menu.defaults[i][0])
-                Menu.chosen[i][2] = Menu.defaults[i][1]
-            else:
-                sel_as_int = int(sel)
-                Menu.chosen[i][1] = sel_as_int
-                Menu.chosen[i][2] = self.clean_default_str(Menu.menus[i][sel_as_int][1])
-
-    def display_menu(self, this_menu, chosen):
+    def display(self):
         """
         Present a menu to the user.
-        :param this_menu: the menu to be displayed
-               Item 0 in this_menu holds the name of the menu
-        :param chosen: list of 2-element lists
-               Inner list holds menu name, and the selection
-               (if any) chosen for that menu
         :return: None
         """
         os.system('clear')
-        print(self.header + '\n')
-        print(self.question + this_menu[0][1] + ':\n')
-        for item in this_menu[1:]:
+        print(Menu.header + '\n')
+        print(Menu.message + self.description + ':\n')
+        for item in self.entries[1:]:
             print('{:2}) {:10}'.format(item[0], item[1]))
         print('\n')
-        for item in chosen:
-            if item[1]:
-                print('Your {}: {}'.format(item[0], item[2]))
+        for item in self.chosen:  # self.chosen is empty for first menu
+            print('Your {}: {}'.format(item[0], item[2]))
 
     def get_selection(self):
         sel = raw_input('\n\n' + self.footer + ' ')
@@ -109,7 +80,7 @@ class Menu:
         """
         :param sel: the raw user input
         :param menu_len: a two-item menu will have entries 0, 1, 2
-               where entry 0 holds the name of the menu
+               where entry 0 holds None
         :return: True on good input
                  False otherwise
         """
@@ -121,20 +92,33 @@ class Menu:
                 if 0 < sel_as_int < menu_len:
                     ret = True
             except ValueError:
-                pass  # ret == False
-        else:  # empty string is a valid input
-            ret = True
+                pass  # ret is already False
+        else:
+            ret = True  # empty string is a valid input
         return ret
 
     def check_bkgnd_ne_fgnd(self, sel):
-        bkgnd_val = self.clean_default_str(Menu.menus[1][int(sel)][1])
-        fgnd_val = Menu.chosen[0][2]
+        if not sel:
+            bkgnd_val = self.default[1]
+        else:
+            sel_as_int = int(sel)  # sel has already been strip()ped
+            bkgnd_val = self.entries[sel_as_int][1].rstrip(' ()*')
+        fgnd_val = self.chosen[0][1]
         if fgnd_val == bkgnd_val:
             return False
         return True
 
-    @staticmethod
-    def clean_default_str(d_str):
-        if d_str.endswith(' (*)'):
-            return d_str[: -4]
-        return d_str
+
+def cycle_menus():  # TODO: cleanup
+    """ Call display_menu() for each menu """
+    global_chosen = []
+    for m in [menu_data.first, menu_data.second, menu_data.third,
+              menu_data.fourth]:
+        this_menu = Menu(m, global_chosen)
+        this_menu.run()  # display menu, get selection, validate selection
+        if this_menu.chosen:
+            global_chosen.append(this_menu.chosen[-1])
+
+
+if __name__ == '__main__':
+    cycle_menus()
