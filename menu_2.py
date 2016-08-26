@@ -34,22 +34,7 @@ class Menu:
                     print('\033[40m')
             if test_1 and test_2:  # both tests passed
                 break
-        description_as_list = [self.description]
-        # TODO: clean this up
-        if selection:
-            list_to_append = description_as_list
-            entry_enum = enumerate(self.entries[int(selection)])
-            for ix, entry in entry_enum:
-                if ix == 1:
-                    short_entry = entry.rstrip(' ()*')
-                    list_to_append += [short_entry]
-                else:
-                    list_to_append += [entry]
-            # list_to_append = description_as_list + list(self.entries[int(selection)])
-            self.chosen.append(list_to_append)
-        else:
-            list_to_append = description_as_list + self.default
-            self.chosen.append(list_to_append)
+        self.update_chosen(selection)
 
     def read(self):
         enum_menu_data = enumerate(self.source)
@@ -60,9 +45,10 @@ class Menu:
                 self.description = item[:]
             else:
                 self.entries.append(item[:])
-                if item[1] and item[1].endswith(' (*)'):  # TODO: explain
+                # remove trailing ' (*)' from default selection
+                if item[1] and item[1].endswith(' ()*'):
                     self.default = list(item)
-                    self.default[1] = self.default[1].rstrip(' (*)')
+                    self.default[1] = self.default[1].rstrip(' ()*')
         self.source = None  # gc self.source
 
     def display(self):
@@ -116,16 +102,33 @@ class Menu:
             return False
         return True
 
+    def update_chosen(self, sel):
+        description_as_list = [self.description]
+        if sel:
+            list_to_append = description_as_list
+            entry_enum = enumerate(self.entries[int(sel)])
+            for ix, entry in entry_enum:
+                if ix == 1:
+                    short_entry = entry.rstrip(' ()*')
+                    list_to_append += [short_entry]
+                else:
+                    list_to_append += [entry]
+            # list_to_append = description_as_list + list(self.entries[int(sel)])
+            self.chosen.append(list_to_append)
+        else:
+            list_to_append = description_as_list + self.default
+            self.chosen.append(list_to_append)
 
-def cycle_menus():  # TODO: cleanup
-    """ Call display_menu() for each menu """
-    global_chosen = []
+
+def cycle_menus():
+    """ Call run() for each menu """
+    global_chosen = []  # holds selections from all menus
     for m in [menu_data.first, menu_data.second, menu_data.third,
               menu_data.fourth]:
         this_menu = Menu(m, global_chosen)
-        this_menu.run()  # display menu, get selection, validate selection
-        if this_menu.chosen:
-            global_chosen.append(this_menu.chosen[-1])
+        # display menu, get and validate selection, update saved choices
+        this_menu.run()
+        global_chosen.append(this_menu.chosen[-1])
     os.system('clear')
     for item in global_chosen:  # self.chosen is empty for first menu
         print('Your {}: {}'.format(item[0], item[2]))
