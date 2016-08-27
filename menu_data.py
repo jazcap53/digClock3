@@ -1,3 +1,8 @@
+"""
+Each list will instantiate a Menu object.
+(*) indicates the default choice for each Menu.
+"""
+
 first = [
     'text color',
     (' 1', 'BLACK',         '\033[30m'),

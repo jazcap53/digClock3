@@ -1,6 +1,7 @@
+from __future__ import print_function
 import pysynth
 
-""" Create or re-create the audio files if necessary """
+""" Create or re-create the audio files if necessary. """
 
 set1 = [['g#3', 4], ['f#3', 4], ['e3', 4], ['b2', 2], ]
 set2 = [['e3', 4], ['g#3', 4], ['f#3', 4], ['b2', 2], ]
@@ -14,9 +15,9 @@ quarter2 = set2 + set3
 quarter3 = set4 + set5 + set1
 quarter4 = set2 + set3 + set4 + set5  # + rest
 
-print
-print "Creating chime files... (this might take about a minute)"
-print
+print()
+print('Creating chime files... (this might take about a minute)')
+print()
 
 # create the hourly bells: h1mono.wav, h2mono.wav, ...
 on_hour = []
@@ -51,4 +52,4 @@ for i in range(1, 13):
             "h" + str(i) + "stereo.wav")
 '''
 
-print "Finished"
+print('Finished')
