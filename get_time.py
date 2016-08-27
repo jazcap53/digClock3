@@ -49,10 +49,11 @@ class DigClock(object):
     def run_clock(self):
         """
         Run the clock and chimes
+        Called by: if '__name__' == '__main__':
         """
         self.read_switches()   # not currently enabled
         self.enact_switches()  # not yet implemented
-        self.chosen = cycle_menus()
+        self.chosen = cycle_menus()  # import'ed from menu above
         try:
             os.system('tput civis')   # make cursor invisible
             print(BOLD)
@@ -73,8 +74,12 @@ class DigClock(object):
             self.p_aud.terminate()
             os.system('clear')
 
-    def read_switches(self):  # not currently enabled
-        """ Read and filter command-line switches """
+    def read_switches(self):
+        """
+        Read and filter command-line switches
+        NOT currently enabled
+        Called by: self.run_clock()
+        """
         return
         args_ok = True
         hyphen_str = ''.join([s[0] for s in self.sys_args])
@@ -91,17 +96,27 @@ class DigClock(object):
         else:
             self.switches = arg_str
 
-    def enact_switches(self):  # not yet implemented
+    def enact_switches(self):
+        """
+        NOT yet implemented
+        Called by: self.run_clock()
+        """
         pass
 
     def get_face(self):
-        """ Get a formatted time string """
+        """
+        Get a formatted time string
+        Called by: self.run_clock()
+        """
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
         self.face += time.strftime(time_str)
 
     def print_face(self):
-        """ Display the face of the clock """
+        """
+        Display the face of the clock
+        Called by: self.run_clock()
+        """
         _ = os.system('clear')
         print('\n' * 7)
         for i in range(9):  # each digit of the clock has nine rows
@@ -115,7 +130,10 @@ class DigClock(object):
 
     @staticmethod
     def print_am_pm():
-        """ In 12-HOUR mode, print AM or PM """
+        """
+        In 12-HOUR mode, print AM or PM
+        Called by: self.print_face()
+        """
         if time.strftime('%p')[0] == 'A':
             print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
             print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
@@ -129,6 +147,7 @@ class DigClock(object):
         """
         If a chime or bell should begin playing now,
         return the name of its .wav file
+        Called by: self.run_clock()
         """
         if self.chosen[3][2] == 'SILENT':  # if chimes are off
             return None
@@ -155,7 +174,10 @@ class DigClock(object):
         return chime_file_name
 
     def get_hrs(self, h_str):
-        """ Chime pattern is the same for 12-Hour and 24-hour display """
+        """
+        Chime pattern is the same for 12-Hour and 24-hour display
+        Called by: self.check_for_chimes()
+        """
         if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
@@ -165,7 +187,10 @@ class DigClock(object):
             return hrs_as_str
 
     def play_chime(self, chime_file_name):
-        """ Play a chime or hourly bell """
+        """
+        Play a chime or hourly bell
+        Called by: self.run_clock()
+        """
         self.w_f = wave.open(chime_file_name, 'rb')
         self.stream = self.p_aud.open(
                 # PyAudio parameters
@@ -173,7 +198,7 @@ class DigClock(object):
                 channels=self.w_f.getnchannels(),
                 rate=self.w_f.getframerate(),
                 output=True,
-                # callback function is called in a separate thread
+                # callback function is executed in a separate thread
                 stream_callback=self.callback)
         self.stream.start_stream()
         self.print_face()
@@ -187,14 +212,20 @@ class DigClock(object):
         self.w_f.close()
 
     def await_new_sec(self):
-        """ Sleep until the number of seconds on the system clock changes """
+        """
+        Sleep until the number of seconds on the system clock changes
+        Called by: self.play_chime()
+        """
         old_face = self.face
         while old_face == self.face:
             time.sleep(.01)
             self.get_face()
 
     def callback(self, in_data, frame_count, time_info, status):
-        """ Return a chunk of audio data, and whether there is more data """
+        """
+        Return a chunk of audio data, and whether there is more data
+        Called by: PyAudio instance
+        """
         data = self.w_f.readframes(frame_count)
         return data, pyaudio.paContinue
 
