@@ -1,7 +1,17 @@
 from __future__ import print_function
 import pysynth
 
-""" Create or re-create the audio files if necessary. """
+"""
+Creates or re-creates the audio files. Used when audio files
+are damaged or absent.
+
+The Westminster Chimes consist of 5 sets of 4 notes each.
+The sets are performed in rotation, i.e.,
+    on quarter hour: set 1
+    on half hour: sets 2 and 3
+    on three-quarter hour: sets 4, 5, and 1
+    on hour: sets 2, 3, 4, and 5
+"""
 
 set1 = [['g#3', 4], ['f#3', 4], ['e3', 4], ['b2', 2], ]
 set2 = [['e3', 4], ['g#3', 4], ['f#3', 4], ['b2', 2], ]
@@ -41,7 +51,8 @@ pysynth.make_wav(quarter3, bpm=60, fn="q3mono.wav")
 pysynth.make_wav(quarter4, bpm=60, fn="q4mono.wav")
 
 '''
-# make the quarterly chimes in stereo
+# make the quarterly chimes in stereo, by mixing 2 identical mono files
+
 for i in range(1, 5):
     pysynth.mix_files("q" + str(i) + "mono.wav", "q" + str(i) + "mono.wav",\
             "q" + str(i) + "stereo.wav")
