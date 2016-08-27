@@ -1,14 +1,22 @@
+"""
+This is the top-level file for DigClock2.
+
+For documentation of wave, see
+https://docs.python.org/2/library/wave.html
+
+For documentation of PyAudio, see
+https://people.csail.mit.edu/hubert/pyaudio/docs/i\
+#example-callback-mode-audio-i-o
+"""
 from __future__ import print_function
 import sys
 import os
 import time
-""" For documentation of PyAudio, see
-https://people.csail.mit.edu/hubert/pyaudio/docs/i\
-#example-callback-mode-audio-i-o """
 import pyaudio
 import wave
 import nums
 from menu import cycle_menus
+
 
 ENDC = '\033[0m'
 BOLD = '\033[01m'
@@ -16,10 +24,11 @@ BOLD = '\033[01m'
 
 class DigClock(object):
     """
-    Show a digital clock, in the terminal, that advances once per second.
-    Play the Westminster Chimes for each quarter hour if selected.
-    Text color, background color, 12- or 24-hour format, and chime or silent
-        modes are chosen by user from menus.
+    Class provided:
+        Show a digital clock, in the terminal, that advances once per second.
+        Play the Westminster Chimes for each quarter hour if selected.
+        Text color, background color, 12- or 24-hour format, and chime or silent
+            modes are chosen by user from menus.
     """
 
     # the characters of the clock face
@@ -38,7 +47,9 @@ class DigClock(object):
         self.chosen = None     # holds menu choices
 
     def run_clock(self):
-        """ Run the clock and chimes """
+        """
+        Run the clock and chimes
+        """
         self.read_switches()   # not currently enabled
         self.enact_switches()  # not yet implemented
         self.chosen = cycle_menus()

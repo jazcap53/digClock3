@@ -2,20 +2,16 @@
 
 ## Summary
 
-Dig, Clock! is a digital clock (surprise!) written in Python 2.7 that runs in
-a Linux terminal. This version plays the Westminster Chimes on every quarter
-hour!
+Dig, Clock! is a menu-driven digital clock, written in Python 2.7, that runs in a Linux terminal. This version can play the Westminster Chimes on every quarter hour!
 
 ## Features
 
-* Bright, attractive numerals appear as cyan over a black background
-* Utf-8 encoded box-drawing characters make smooth, gap-less digits
-* Utterly **un**-customizable; WYGIWYG!!!
-* 24-hour format
-* **No** alarm function
+* Simple menus allow you to choose text color, background color, 12-hour or 24-hour display, and silent or chime mode
+* Utf-8 encoded box-drawing characters make large, clear, gap-less digits
 * Timekeeping as accurate as your system clock
 
 ## Dependencies
+Python 2.7 -- available via your package manager
 PortAudio v19 -- available via your package manager
 PyAudio -- available at https://pypi.python.org/pypi/PyAudio
 PySynth -- available as PySynth-1.1.tar.gz from http://mdoege.github.io/PySynth/#m
