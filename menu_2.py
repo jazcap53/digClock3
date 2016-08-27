@@ -24,15 +24,15 @@ class Menu:
             selection = self.get_selection()
             test_1 = self.validate_selection(selection, len(self.entries))
             test_2 = True  # may be set to False
-            if self.description == 'background color':
+            if self.description == 'background color' and test_1:
                 test_2 = self.check_bkgnd_ne_fgnd(selection)
                 if not test_2:  # bkgrnd and fgrnd colors are the same
-                    print('\033[41m')
-                    print('BACKGROUND COLOR MUST NOT MATCH FOREGROUND COLOR')
-                    time.sleep(2)
-                    print('\033[40m')
+                    self.print_err_msg('BACKGROUND COLOR MUST NOT MATCH TEXT COLOR')
+                    continue
             if test_1 and test_2:  # both tests passed
                 break
+            else:
+                self.print_err_msg('\n\nINPUT ERROR')
         self.update_chosen(selection)
 
     def read(self):
@@ -58,7 +58,7 @@ class Menu:
         print(Menu.message + self.description + ':\n')
         for item in self.entries[1:]:
             print('{:2}) {:10}'.format(item[0], item[1]))
-        print('\n')
+        # print('')
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
 
@@ -98,6 +98,13 @@ class Menu:
         if fgnd_val == bkgnd_val:
             return False
         return True
+
+    @staticmethod
+    def print_err_msg(err_msg):
+        print('\033[41m')
+        print(err_msg)
+        time.sleep(2)
+        print('\033[40m')
 
     def update_chosen(self, sel):
         description_as_list = [self.description]

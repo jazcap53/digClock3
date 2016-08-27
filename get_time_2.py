@@ -11,15 +11,15 @@ import nums
 # from menu import Menu
 from menu_2 import cycle_menus
 
-LIGHTCYAN = '\033[96m'
-FGPINK = '\033[95m'
-BGGREEN = '\033[42m'
-BGCYAN = '\033[46m'
+# LIGHTCYAN = '\033[96m'
+# FGPINK = '\033[95m'
+# BGGREEN = '\033[42m'
+# BGCYAN = '\033[46m'
 ENDC = '\033[0m'
 BOLD = '\033[01m'
-BGBLACK = '\033[40m'
+# BGBLACK = '\033[40m'
 
-HALF_DAY = 'H'
+# HALF_DAY = 'H'
 
 # TODO: remove once menu is implemented
 # for more colors see e.g.
@@ -41,9 +41,9 @@ class DigClock(object):
         self.stream = None     # stream to which wave file is output
         self.face = None       # clock face
         self.p_aud = None      # instance of PyAudio
-        # self.sys_args = [arg for arg in sys.argv[1:]]
-        # self.good_args = 'hH'  # holds permitted switches
-        # self.switches = None   # holds filtered switches
+        self.sys_args = [arg for arg in sys.argv[1:]]
+        self.good_args = 'hd'  # holds permitted switches
+        self.switches = None   # holds filtered switches
         self.chosen = None     # holds menu choices
 #        self.menu = Menu()
 #        self.menu.cycle_menus()
@@ -56,8 +56,8 @@ class DigClock(object):
         try:
             os.system('tput civis')  # make cursor invisible
             print(BOLD)
-            print(LIGHTCYAN)
-            print(BGBLACK)
+            print(self.chosen[0][3])  # set text color
+            print(self.chosen[1][3])  # set background color
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
             while True:
@@ -71,6 +71,7 @@ class DigClock(object):
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
             self.p_aud.terminate()
+            os.system('clear')
 
     # def read_switches(self):
     #     args_ok = True
@@ -124,6 +125,8 @@ class DigClock(object):
     def check_for_chimes(self):
         """ If a chime or bell should begin playing now,
         return the name of its .wav file """
+        if self.chosen[3][2] == 'SILENT':  # if chimes are off
+            return None
         chime_file_name = None
         if not self.face:
             return None
@@ -147,7 +150,7 @@ class DigClock(object):
         return chime_file_name
 
     def get_hrs(self, h_str):
-        if 'H' in self.switches:
+        if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
             # Convert '00'..'23' hours to '01'..'12'
