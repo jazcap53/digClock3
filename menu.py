@@ -26,7 +26,7 @@ class Menu:
             test_2 = True  # may be set to False
             if self.description == 'background color' and test_1:
                 test_2 = self.check_bkgnd_ne_fgnd(selection)
-                if not test_2:  # bkgrnd and fgrnd colors are the same
+                if not test_2:  # bkgrnd and text colors are the same
                     self.print_err_msg('BACKGROUND COLOR MUST NOT MATCH TEXT COLOR')
                     continue
             if test_1 and test_2:  # both tests passed

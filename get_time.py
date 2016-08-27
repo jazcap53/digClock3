@@ -8,23 +8,10 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
-# from menu import Menu
 from menu import cycle_menus
 
-# LIGHTCYAN = '\033[96m'
-# FGPINK = '\033[95m'
-# BGGREEN = '\033[42m'
-# BGCYAN = '\033[46m'
 ENDC = '\033[0m'
 BOLD = '\033[01m'
-# BGBLACK = '\033[40m'
-
-# HALF_DAY = 'H'
-
-# TODO: remove once menu is implemented
-# for more colors see e.g.
-# http://www.unknownerror.org/opensource/mrmrs/colors/q/stackoverflow/287871/
-#        print-in-terminal-with-colors-using-python
 
 
 class DigClock(object):
@@ -45,16 +32,14 @@ class DigClock(object):
         self.good_args = 'hd'  # holds permitted switches
         self.switches = None   # holds filtered switches
         self.chosen = None     # holds menu choices
-#        self.menu = Menu()
-#        self.menu.cycle_menus()
 
     def run_clock(self):
         """ Run the clock and chimes """
-        # self.read_switches()
-        # self.enact_switches()
+        self.read_switches()   # not currently enabled
+        self.enact_switches()  # not yet implemented
         self.chosen = cycle_menus()
         try:
-            os.system('tput civis')  # make cursor invisible
+            os.system('tput civis')   # make cursor invisible
             print(BOLD)
             print(self.chosen[0][3])  # set text color
             print(self.chosen[1][3])  # set background color
@@ -73,24 +58,25 @@ class DigClock(object):
             self.p_aud.terminate()
             os.system('clear')
 
-    # def read_switches(self):
-    #     args_ok = True
-    #     hyphen_str = ''.join([s[0] for s in self.sys_args])
-    #     arg_str = ''.join([s[1:] for s in self.sys_args])
-    #     if hyphen_str != '-' * len(self.sys_args):
-    #         print('Each command-line argument must begin with a hyphen.')
-    #         args_ok = False
-    #     for c in arg_str:
-    #         if c not in self.good_args:
-    #             args_ok = False
-    #             print('Unrecognized option: \'{}\''.format(c))
-    #     if not args_ok:
-    #         sys.exit(0)
-    #     else:
-    #         self.switches = arg_str
-    #
-    # def enact_switches(self):
-    #     pass
+    def read_switches(self):  # not currently enabled
+        return
+        args_ok = True
+        hyphen_str = ''.join([s[0] for s in self.sys_args])
+        arg_str = ''.join([s[1:] for s in self.sys_args])
+        if hyphen_str != '-' * len(self.sys_args):
+            print('Each command-line argument must begin with a hyphen.')
+            args_ok = False
+        for c in arg_str:
+            if c not in self.good_args:
+                args_ok = False
+                print('Unrecognized option: \'{}\''.format(c))
+        if not args_ok:
+            sys.exit(0)
+        else:
+            self.switches = arg_str
+
+    def enact_switches(self):  # not yet implemented
+        pass
 
     def get_face(self):
         self.face = ' ' * 3
