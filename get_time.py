@@ -8,17 +8,18 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 import pyaudio
 import wave
 import nums
-from menu import Menu
+# from menu import Menu
+from menu import cycle_menus
 
-LIGHTCYAN = '\033[96m'
-FGPINK = '\033[95m'
-BGGREEN = '\033[42m'
-BGCYAN = '\033[46m'
+# LIGHTCYAN = '\033[96m'
+# FGPINK = '\033[95m'
+# BGGREEN = '\033[42m'
+# BGCYAN = '\033[46m'
 ENDC = '\033[0m'
 BOLD = '\033[01m'
-BGBLACK = '\033[40m'
+# BGBLACK = '\033[40m'
 
-HALF_DAY = 'H'
+# HALF_DAY = 'H'
 
 # TODO: remove once menu is implemented
 # for more colors see e.g.
@@ -41,20 +42,22 @@ class DigClock(object):
         self.face = None       # clock face
         self.p_aud = None      # instance of PyAudio
         self.sys_args = [arg for arg in sys.argv[1:]]
-        self.good_args = 'hH'  # holds permitted switches
+        self.good_args = 'hd'  # holds permitted switches
         self.switches = None   # holds filtered switches
-        self.menu = Menu()
-        self.menu.cycle_menus()
+        self.chosen = None     # holds menu choices
+#        self.menu = Menu()
+#        self.menu.cycle_menus()
 
     def run_clock(self):
         """ Run the clock and chimes """
-        self.read_switches()
-        self.enact_switches()
+        # self.read_switches()
+        # self.enact_switches()
+        self.chosen = cycle_menus()
         try:
             os.system('tput civis')  # make cursor invisible
             print(BOLD)
-            print(LIGHTCYAN)
-            print(BGBLACK)
+            print(self.chosen[0][3])  # set text color
+            print(self.chosen[1][3])  # set background color
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
             while True:
@@ -68,29 +71,30 @@ class DigClock(object):
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
             self.p_aud.terminate()
+            os.system('clear')
 
-    def read_switches(self):
-        args_ok = True
-        hyphen_str = ''.join([s[0] for s in self.sys_args])
-        arg_str = ''.join([s[1:] for s in self.sys_args])
-        if hyphen_str != '-' * len(self.sys_args):
-            print('Each command-line argument must begin with a hyphen.')
-            args_ok = False
-        for c in arg_str:
-            if c not in self.good_args:
-                args_ok = False
-                print('Unrecognized option: \'{}\''.format(c))
-        if not args_ok:
-            sys.exit(0)
-        else:
-            self.switches = arg_str
-
-    def enact_switches(self):
-        pass
+    # def read_switches(self):
+    #     args_ok = True
+    #     hyphen_str = ''.join([s[0] for s in self.sys_args])
+    #     arg_str = ''.join([s[1:] for s in self.sys_args])
+    #     if hyphen_str != '-' * len(self.sys_args):
+    #         print('Each command-line argument must begin with a hyphen.')
+    #         args_ok = False
+    #     for c in arg_str:
+    #         if c not in self.good_args:
+    #             args_ok = False
+    #             print('Unrecognized option: \'{}\''.format(c))
+    #     if not args_ok:
+    #         sys.exit(0)
+    #     else:
+    #         self.switches = arg_str
+    #
+    # def enact_switches(self):
+    #     pass
 
     def get_face(self):
         self.face = ' ' * 3
-        time_str = "%I:%M:%S" if (HALF_DAY in self.switches) else "%H:%M:%S"
+        time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
         self.face += time.strftime(time_str)
 
     def print_face(self):
@@ -103,7 +107,7 @@ class DigClock(object):
             print()
         print()
         print()
-        if HALF_DAY in self.switches:
+        if self.chosen[2][2] == '12-HOUR':
             self.print_am_pm()
 
     @staticmethod
@@ -121,6 +125,8 @@ class DigClock(object):
     def check_for_chimes(self):
         """ If a chime or bell should begin playing now,
         return the name of its .wav file """
+        if self.chosen[3][2] == 'SILENT':  # if chimes are off
+            return None
         chime_file_name = None
         if not self.face:
             return None
@@ -144,7 +150,7 @@ class DigClock(object):
         return chime_file_name
 
     def get_hrs(self, h_str):
-        if 'H' in self.switches:
+        if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
             # Convert '00'..'23' hours to '01'..'12'
