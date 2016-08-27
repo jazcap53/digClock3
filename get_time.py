@@ -15,8 +15,12 @@ BOLD = '\033[01m'
 
 
 class DigClock(object):
-    """ Show a digital clock, in the terminal, that advances once per second.
-    Play the Westminster Chimes for each quarter hour """
+    """
+    Show a digital clock, in the terminal, that advances once per second.
+    Play the Westminster Chimes for each quarter hour if selected.
+    Text color, background color, 12- or 24-hour format, and chime or silent
+        modes are chosen by user from menus.
+    """
 
     # the characters of the clock face
     digits = {'0': nums.Zero, '1': nums.One, '2': nums.Two, '3': nums.Three,
@@ -49,7 +53,7 @@ class DigClock(object):
                 self.get_face()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
-                if chime_file_name is not None:
+                if chime_file_name is not None:  # we should play a chime now
                     self.play_chime(chime_file_name)
                 self.await_new_sec()
         finally:
@@ -59,6 +63,7 @@ class DigClock(object):
             os.system('clear')
 
     def read_switches(self):  # not currently enabled
+        """ Read and filter command-line switches """
         return
         args_ok = True
         hyphen_str = ''.join([s[0] for s in self.sys_args])
@@ -79,6 +84,7 @@ class DigClock(object):
         pass
 
     def get_face(self):
+        """ Get a formatted time string """
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
         self.face += time.strftime(time_str)
@@ -98,7 +104,7 @@ class DigClock(object):
 
     @staticmethod
     def print_am_pm():
-        """ In half-day mode, print AM or PM """
+        """ In 12-HOUR mode, print AM or PM """
         if time.strftime('%p')[0] == 'A':
             print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
             print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
@@ -109,8 +115,10 @@ class DigClock(object):
             print(' ' * 83 + nums.dblLVert + ' ' + nums.dbl3Vert)
 
     def check_for_chimes(self):
-        """ If a chime or bell should begin playing now,
-        return the name of its .wav file """
+        """
+        If a chime or bell should begin playing now,
+        return the name of its .wav file
+        """
         if self.chosen[3][2] == 'SILENT':  # if chimes are off
             return None
         chime_file_name = None
@@ -136,6 +144,7 @@ class DigClock(object):
         return chime_file_name
 
     def get_hrs(self, h_str):
+        """ Chime pattern is the same for 12-Hour and 24-hour display """
         if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
@@ -145,9 +154,10 @@ class DigClock(object):
             return hrs_as_str
 
     def play_chime(self, chime_file_name):
-        """ Play a chime or bell """
+        """ Play a chime or hourly bell """
         self.w_f = wave.open(chime_file_name, 'rb')
         self.stream = self.p_aud.open(
+                # PyAudio parameters
                 format=self.p_aud.get_format_from_width(self.w_f.getsampwidth()),
                 channels=self.w_f.getnchannels(),
                 rate=self.w_f.getframerate(),
