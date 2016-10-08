@@ -12,8 +12,11 @@ from __future__ import print_function
 import sys
 import os
 import time
+import argparse
+
 import pyaudio
 import wave
+
 import nums
 from menu import cycle_menus
 
@@ -36,24 +39,31 @@ class DigClock(object):
               '4': nums.Four, '5': nums.Five, '6': nums.Six, '7': nums.Seven,
               '8': nums.Eight, '9': nums.Nine, ':': nums.Colon, ' ': nums.Space}
 
+    DEFAULTS = [['text color', ' 7', 'LIGHTCYAN', '\x1b[96m'],
+                ['background color', ' 1', 'BLACK', '\x1b[40m'],
+                ['display mode', ' 2', '12-HOUR'],
+                ['chime mode', ' 1', 'CHIME']]  # default menu choices
+
     def __init__(self):
-        self.w_f = None        # .wav file
-        self.stream = None     # stream to which wave file is output
-        self.face = None       # clock face
-        self.p_aud = None      # instance of PyAudio
-        self.sys_args = [arg for arg in sys.argv[1:]]
-        self.good_args = 'hd'  # holds permitted switches
-        self.switches = None   # holds filtered switches
-        self.chosen = None     # holds menu choices
+        self.w_f = None         # .wav file
+        self.stream = None      # stream to which wave file is output
+        self.face = None        # clock face
+        self.p_aud = None       # instance of PyAudio
+        self.chosen = None      # holds menu choices
+        self.cur_time = None    # holds current unformatted time
+        self.arg_parser = None  # holds argument parser object
+        self.args = None        # c. l. arguments
 
     def run_clock(self):
         """
         Run the clock and chimes
-        Called by: if '__name__' == '__main__':
+        Called by: client code
         """
         self.read_switches()   # not currently enabled
-        self.enact_switches()  # not yet implemented
-        self.chosen = cycle_menus()  # import'ed from menu above
+        if self.args.d:
+            self.chosen = self.DEFAULTS
+        else:
+            self.chosen = cycle_menus()  # imported from menu above
         try:
             os.system('tput civis')   # make cursor invisible
             print(BOLD)
@@ -62,6 +72,7 @@ class DigClock(object):
             # PyAudio provides Python bindings for PortAudio audio i/o library
             self.p_aud = pyaudio.PyAudio()
             while True:
+                self.cur_time = time.localtime()
                 self.get_face()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
@@ -80,28 +91,12 @@ class DigClock(object):
         NOT currently enabled
         Called by: self.run_clock()
         """
-        return
-        args_ok = True
-        hyphen_str = ''.join([s[0] for s in self.sys_args])
-        arg_str = ''.join([s[1:] for s in self.sys_args])
-        if hyphen_str != '-' * len(self.sys_args):
-            print('Each command-line argument must begin with a hyphen.')
-            args_ok = False
-        for c in arg_str:
-            if c not in self.good_args:
-                args_ok = False
-                print('Unrecognized option: \'{}\''.format(c))
-        if not args_ok:
-            sys.exit(0)
-        else:
-            self.switches = arg_str
-
-    def enact_switches(self):
-        """
-        NOT yet implemented
-        Called by: self.run_clock()
-        """
-        pass
+        self.arg_parser = argparse.ArgumentParser()
+        self.arg_parser.add_argument('-d',
+                                     help='skip the menus: accept all\
+                                     default arguments',
+                                     action='store_true')
+        self.args = self.arg_parser.parse_args()
 
     def get_face(self):
         """
@@ -110,7 +105,7 @@ class DigClock(object):
         """
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
-        self.face += time.strftime(time_str)
+        self.face += time.strftime(time_str)   # self.cur_time.strftime(time_str)
 
     def print_face(self):
         """
@@ -118,6 +113,16 @@ class DigClock(object):
         Called by: self.run_clock()
         """
         _ = os.system('clear')
+        self.print_digits()
+        if self.chosen[2][2] == '12-HOUR':
+            self.print_am_pm()
+
+    def print_digits(self):
+        """
+        Display the digits showing the time
+        :return: None
+        Called by: self.print_face()
+        """
         print('\n' * 7)
         for i in range(9):  # each digit of the clock has nine rows
             for ch in self.face:
@@ -125,16 +130,14 @@ class DigClock(object):
             print()
         print()
         print()
-        if self.chosen[2][2] == '12-HOUR':
-            self.print_am_pm()
 
-    @staticmethod
-    def print_am_pm():
+    def print_am_pm(self):
         """
         In 12-HOUR mode, print AM or PM
         Called by: self.print_face()
         """
-        if time.strftime('%p')[0] == 'A':
+        # if self.face[8] == 'A':
+        if time.strftime('%p', self.cur_time)[0] == 'A':
             print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
             print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
             print(' ' * 83 + nums.dbl2Vert + ' ' + nums.dbl2Vert)
@@ -160,16 +163,16 @@ class DigClock(object):
         hrs = self.face[3:5]
         if mins == '59' and secs == '38':
             # start hourly bells 22 seconds early
-            chime_file_name = 'chimes/q4mono.wav'
+            chime_file_name = 'app/chimes/q4mono.wav'
         elif secs == '00' and mins == '15':
-            chime_file_name = 'chimes/q1mono.wav'
+            chime_file_name = 'app/chimes/q1mono.wav'
         elif secs == '00' and mins == '30':
-            chime_file_name = 'chimes/q2mono.wav'
+            chime_file_name = 'app/chimes/q2mono.wav'
         elif secs == '00' and mins == '45':
-            chime_file_name = 'chimes/q3mono.wav'
+            chime_file_name = 'app/chimes/q3mono.wav'
         elif secs == '00' and mins == '00':
             hrs = self.get_hrs(hrs)
-            hr_file_name = 'chimes/h' + hrs + 'mono.wav'
+            hr_file_name = 'app/chimes/h' + hrs + 'mono.wav'
             chime_file_name = hr_file_name
         return chime_file_name
 

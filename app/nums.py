@@ -12,7 +12,7 @@ botR = u'\u251b'
 teeL = u'\u252b'  # 'T' shape with the stem pointing leftward
 teeR = u'\u2523'
 dot = u'\u2981'
-topTip = u'\u257b'  # tip: end of part of a digit
+topTip = u'\u257b'  # tip: end of a vertical line
 botTip = u'\u2579'
 
 # Each row of each numeral of the clock face is a string of length 9.
