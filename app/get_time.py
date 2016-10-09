@@ -27,10 +27,10 @@ BOLD = '\033[01m'
 class DigClock(object):
     """
     Class provided:
-        Show a digital clock, in the terminal, that advances once per second.
-        Play the Westminster Chimes for each quarter hour if selected.
+        Shows a digital clock, in the terminal, that advances once per second.
+        Plays the Westminster Chimes for each quarter hour if selected.
         Text color, background color, 12- or 24-hour format, and chime or silent
-            modes are chosen by user from menus.
+            modes may be chosen by the user from menus.
     """
 
     # the characters of the clock face
@@ -64,7 +64,8 @@ class DigClock(object):
             print(self.chosen[0][3])  # set text color
             print(self.chosen[1][3])  # set background color
             # PyAudio provides Python bindings for PortAudio audio i/o library
-            self.p_aud = pyaudio.PyAudio()
+            if self.chosen[3][2] == 'CHIME':
+                self.p_aud = pyaudio.PyAudio()
             while True:
                 self.cur_time = time.localtime()
                 self.get_face()
@@ -76,8 +77,16 @@ class DigClock(object):
         finally:
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
-            self.p_aud.terminate()
+            if self.p_aud is not None:
+                self.p_aud.terminate()
             os.system('clear')
+
+    def set_up_c_l_args(self):
+        self.read_switches()
+        if self.args.d:
+            self.chosen = self.DEFAULTS
+        else:
+            self.chosen = menu.cycle_menus()
 
     def read_switches(self):
         """
@@ -90,13 +99,6 @@ class DigClock(object):
                                      default arguments',
                                      action='store_true')
         self.args = self.arg_parser.parse_args()
-
-    def set_up_c_l_args(self):
-        self.read_switches()
-        if self.args.d:
-            self.chosen = self.DEFAULTS
-        else:
-            self.chosen = menu.cycle_menus()
 
     def get_face(self):
         """
