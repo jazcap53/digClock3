@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
 import time
-import menu_data
+from menu_data import menu_list
 
 
 class Menu:
@@ -173,8 +173,7 @@ def cycle_menus():
     Called by: client get_time.run_clock()
     """
     global_chosen = []  # holds selections from all menus
-    for m in [menu_data.first, menu_data.second, menu_data.third,
-              menu_data.fourth]:
+    for m in menu_list:
         this_menu = Menu(m, global_chosen)
         # read and display menu, get and validate selection,
         # update saved choices
