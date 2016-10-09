@@ -1,8 +1,11 @@
+header = 'Welcome to DigClock' or None
+message = 'Please select a ' or None
+footer = 'Your choice, or \'Enter\' for default (*):' or None
+
 """
 Each inner list will instantiate a Menu object.
 (*) indicates the default choice for each Menu.
 """
-
 menu_list = [[
         'text color',
         (' 1', 'BLACK',         '\033[30m'),

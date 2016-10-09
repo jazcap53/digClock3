@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import time
 from menu_data import menu_list
+from menu_data import header, message, footer
 
 
 class Menu:
@@ -9,17 +10,17 @@ class Menu:
     Class provided: an interactive menu presented to user
     Instantiated by global function cycle_menus()
     """
-
-    header = 'Welcome to DigClock'
-    message = 'Please select a '
-    footer = 'Your choice, or \'Enter\' for default (*):'
-
-    def __init__(self, source, chosen):
+    def __init__(self, source, chosen, headr, msg, footr):
         self.source = source
+        self.header = headr
+        self.message = msg
+        self.footer = footr
         self.description = None
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
-        self.chosen = chosen[:]
+        self.selection = None
+        self.chosen = chosen[:]  # TODO: get rid of [:] ?
+        self.err_msg = None
 
     def run(self):
         """
@@ -30,21 +31,22 @@ class Menu:
         """
         self.read()
         self.display()
-        selection = None  # to make PyCharm happy
         while True:  # loop until user makes a valid selection
-            selection = self.get_selection()
-            test_1 = self.validate_selection(selection, len(self.entries))
+            self.get_selection()
+            test_1 = self.validate_selection(len(self.entries))
             test_2 = True  # may be set to False two lines down
             if self.description == 'background color' and test_1:
-                test_2 = self.check_bkgnd_ne_fgnd(selection)
+                test_2 = self.check_bkgnd_ne_fgnd(self.selection)
                 if not test_2:  # bkgrnd and text colors are the same
-                    self.print_err_msg('BACKGROUND COLOR MUST NOT MATCH TEXT COLOR')
+                    self.err_msg = 'BACKGROUND COLOR MUST NOT MATCH TEXT COLOR'
+                    self.print_err_msg()
                     continue
             if test_1 and test_2:  # both tests passed
                 break
             else:
-                self.print_err_msg('\n\nINPUT ERROR')
-        self.update_chosen(selection)
+                self.err_msg = '\n\nINPUT ERROR'
+                self.print_err_msg()
+        self.update_chosen(self.selection)
 
     def read(self):
         """
@@ -69,8 +71,8 @@ class Menu:
         Called by: self.run()
         """
         os.system('clear')
-        print(Menu.header + '\n')
-        print(Menu.message + self.description + ':\n')
+        print(self.header + '\n')
+        print(self.message + self.description + ':\n')
         for item in self.entries[1:]:
             print('{:2}) {:10}'.format(item[0], item[1]))
         print()
@@ -79,14 +81,12 @@ class Menu:
 
     def get_selection(self):
         """
-        Get and return the user selection.
+        Get the user selection.
         Called by: self.run()
         """
-        sel = raw_input('\n\n' + self.footer + ' ')
-        return sel
+        self.selection = raw_input('\n\n' + self.footer + ' ')
 
-    @staticmethod
-    def validate_selection(sel, menu_len):
+    def validate_selection(self, menu_len):
         """
         Checks that user input represents an integer in the correct
         range, or is a null string.
@@ -98,10 +98,10 @@ class Menu:
         Called by: self.run()
         """
         ret = False
-        sel = sel.strip()
-        if sel:
+        self.selection = self.selection.strip()
+        if self.selection:
             try:
-                sel_as_int = int(sel)
+                sel_as_int = int(self.selection)
                 if 0 < sel_as_int < menu_len:
                     ret = True
             except ValueError:  # input is non-numeric
@@ -133,13 +133,12 @@ class Menu:
             return False
         return True
 
-    @staticmethod
-    def print_err_msg(err_msg):
+    def print_err_msg(self):
         """
         Called by: self.run()
         """
         print('\033[41m')  # red background
-        print(err_msg)
+        print(self.err_msg)
         time.sleep(2)
         print('\033[40m')  # black background
 
@@ -174,7 +173,7 @@ def cycle_menus():
     """
     global_chosen = []  # holds selections from all menus
     for m in menu_list:
-        this_menu = Menu(m, global_chosen)
+        this_menu = Menu(m, global_chosen, header, message, footer)
         # read and display menu, get and validate selection,
         # update saved choices
         this_menu.run()
