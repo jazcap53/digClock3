@@ -84,7 +84,7 @@ class DigClock(object):
         Handle command-line switches
         Called by: self.run_clock()
         """
-        self.arg_parser = argparse.ArgumentParser()
+        self.arg_parser = argparse.ArgumentParser(description='Run a digital clock in the terminal.')
         self.arg_parser.add_argument('-d',
                                      help='skip the menus: accept all\
                                      default arguments',
