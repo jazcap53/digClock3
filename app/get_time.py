@@ -9,7 +9,6 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 #example-callback-mode-audio-i-o
 """
 from __future__ import print_function
-import sys
 import os
 import time
 import argparse
@@ -18,7 +17,7 @@ import pyaudio
 import wave
 
 import nums
-from menu import cycle_menus
+import menu
 
 
 ENDC = '\033[0m'
@@ -59,11 +58,6 @@ class DigClock(object):
         Run the clock and chimes
         Called by: client code
         """
-        self.read_switches()   # not currently enabled
-        if self.args.d:
-            self.chosen = self.DEFAULTS
-        else:
-            self.chosen = cycle_menus()  # imported from menu above
         try:
             os.system('tput civis')   # make cursor invisible
             print(BOLD)
@@ -87,8 +81,7 @@ class DigClock(object):
 
     def read_switches(self):
         """
-        Read and filter command-line switches
-        NOT currently enabled
+        Handle command-line switches
         Called by: self.run_clock()
         """
         self.arg_parser = argparse.ArgumentParser()
@@ -97,6 +90,13 @@ class DigClock(object):
                                      default arguments',
                                      action='store_true')
         self.args = self.arg_parser.parse_args()
+
+    def set_up_c_l_args(self):
+        self.read_switches()
+        if self.args.d:
+            self.chosen = self.DEFAULTS
+        else:
+            self.chosen = menu.cycle_menus()
 
     def get_face(self):
         """
@@ -136,7 +136,6 @@ class DigClock(object):
         In 12-HOUR mode, print AM or PM
         Called by: self.print_face()
         """
-        # if self.face[8] == 'A':
         if time.strftime('%p', self.cur_time)[0] == 'A':
             print(' ' * 83 + nums.dblConcDn + ' ' + nums.dblTeeDn)
             print(' ' * 83 + nums.dblHoriz + ' ' + nums.dbl3Vert)
@@ -235,4 +234,5 @@ class DigClock(object):
 
 if __name__ == '__main__':
     clk = DigClock()
+    clk.set_up_c_l_args()
     clk.run_clock()
