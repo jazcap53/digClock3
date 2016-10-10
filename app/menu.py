@@ -19,7 +19,7 @@ class Menu:
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
-        self.chosen = chosen
+        self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
 
     def run(self):
