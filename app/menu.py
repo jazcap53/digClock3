@@ -19,7 +19,7 @@ class Menu:
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
-        self.chosen = chosen[:]  # TODO: get rid of [:] ?
+        self.chosen = chosen
         self.err_msg = None
 
     def run(self):
@@ -90,7 +90,6 @@ class Menu:
         """
         Checks that user input represents an integer in the correct
         range, or is a null string.
-        :param sel: the raw user input
         :param menu_len: a two-item menu will have entries 0, 1, 2
                where entry 0 holds null strings to mimic 1-indexing
         :return: True on good input
@@ -104,7 +103,7 @@ class Menu:
                 sel_as_int = int(self.selection)
                 if 0 < sel_as_int < menu_len:
                     ret = True
-            except ValueError:  # input is non-numeric
+            except ValueError:  # input is not an integer
                 pass  # ret is already False
         else:
             ret = True  # empty string is a valid input
@@ -125,7 +124,7 @@ class Menu:
         else:
             sel_as_int = int(sel)  # sel has already been strip()ped
             # self.entries[sel_as_int][1] may be e.g.,
-            # ('1', 'BLACK (*)', '\x1b[40m')
+            #     ('1', 'BLACK (*)', '\x1b[40m')
             bkgnd_val = self.entries[sel_as_int][1].rstrip(' ()*')
         # self.chosen[0]: stored selection from previous menu
         fgnd_val = self.chosen[0][2]
