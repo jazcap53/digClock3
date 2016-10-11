@@ -1,10 +1,13 @@
 from __future__ import print_function
 import os
 import time
+# TODO: import entire menu_data package
 from menu_data import menu_list
 from menu_data import header, message, footer
+from menu_data import bad_combinations
 
-
+# TODO: make err_msg into an @property
+# TODO: simplify flow
 class Menu:
     """
     Class provided: an interactive menu presented to user
@@ -19,6 +22,7 @@ class Menu:
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
+        self.bad_combinations = bad_combinations
         self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
 
@@ -33,14 +37,11 @@ class Menu:
         self.display()
         while True:  # loop until user makes a valid selection
             self.get_selection()
-            test_1 = self.validate_selection(len(self.entries))
-            test_2 = True  # may be set to False two lines down
-            if self.description == 'background color' and test_1:
-                test_2 = self.check_bkgnd_ne_fgnd(self.selection)
-                if not test_2:  # bkgrnd and text colors are the same
-                    self.err_msg = 'BACKGROUND COLOR MUST NOT MATCH TEXT COLOR'
-                    self.print_err_msg()
-                    continue
+            test_1 = self.validate_selection(len(self.entries))  # TODO: don't pass parameter
+            test_2 = self.good_combination()
+            if not test_2:
+                self.print_err_msg()
+                continue
             if test_1 and test_2:  # both tests passed
                 break
             else:
@@ -109,28 +110,28 @@ class Menu:
             ret = True  # empty string is a valid input
         return ret
 
-    def check_bkgnd_ne_fgnd(self, sel):
+    def good_combination(self):
         """
-        Checks that the user's choice of text color is not the same
-        as their choice of background color.
-        :param sel: The user's choice, which may be a null string but is
-            otherwise a valid integer (as string)
-        :return: True if text color and background color are different
-                 False if they are the same
-        Called by: self.run()
+
+        :return:
         """
-        if not sel:
-            bkgnd_val = self.default[1]
+        if not self.selection:
+            new_value = self.get_current_default()
         else:
-            sel_as_int = int(sel)  # sel has already been strip()ped
-            # self.entries[sel_as_int][1] may be e.g.,
-            #     ('1', 'BLACK (*)', '\x1b[40m')
-            bkgnd_val = self.entries[sel_as_int][1].rstrip(' ()*')
-        # self.chosen[0]: stored selection from previous menu
-        fgnd_val = self.chosen[0][2]
-        if fgnd_val == bkgnd_val:
+            # self.selection has already been strip()ped
+            selection_int = int(self.selection)
+            new_value = int(self.entries[selection_int][0])
+        choices_so_far = [int(item[1]) for item in self.chosen]
+        choices_so_far.append(new_value)
+        choices_tuple = tuple(choices_so_far)
+        if choices_tuple in self.bad_combinations:
+            # get error message corresponding to this bad combination
+            self.err_msg = self.bad_combinations[choices_tuple]
             return False
         return True
+
+    def get_current_default(self):
+        return int(self.default[0])
 
     def print_err_msg(self):
         """

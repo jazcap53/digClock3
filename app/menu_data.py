@@ -45,3 +45,14 @@ menu_list = [[
         (' 1', 'CHIME (*)'),
         (' 2', 'SILENT')
     ]]
+
+bad_combinations = {
+        (1, 1): 'foreground color must not be the same as background color',
+        (2, 2): 'foreground color must not be the same as background color',
+        (3, 3): 'foreground color must not be the same as background color',
+        (5, 4): 'foreground color must not be the same as background color',
+        (8, 5): 'foreground color must not be the same as background color',
+        (11, 6): 'foreground color must not be the same as background color',
+        (13, 7): 'foreground color must not be the same as background color',
+        (14, 8): 'foreground color must not be the same as background color'
+}
