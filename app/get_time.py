@@ -10,14 +10,17 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 """
 from __future__ import print_function
 import os
+import sys
 import time
 import argparse
+import importlib
 
 import pyaudio
 import wave
 
 import nums
 import menu
+from args_actions import ParseTime
 
 
 ENDC = '\033[0m'
@@ -82,6 +85,11 @@ class DigClock(object):
             os.system('clear')
 
     def set_up_c_l_args(self):
+        """
+
+        :return:
+        Called by: main()
+        """
         self.read_switches()
         if self.args.d:
             self.chosen = self.DEFAULTS
@@ -91,13 +99,17 @@ class DigClock(object):
     def read_switches(self):
         """
         Handle command-line switches
-        Called by: self.run_clock()
+        Called by: self.set_up_c_l_args()
         """
         self.arg_parser = argparse.ArgumentParser(description='Run a digital clock in the terminal.')
         self.arg_parser.add_argument('-d',
-                                     help='skip the menus: accept all\
-                                     default arguments',
+                                     help='skip the menus: accept all'
+                                     ' default arguments',
                                      action='store_true')
+        self.arg_parser.add_argument('-t', metavar='timestring', type=str,
+                                     help='test mode: start clock from given time'
+                                          ' (in 24-hour HH:MM:SS format)',
+                                          action=ParseTime)
         self.args = self.arg_parser.parse_args()
 
     def get_face(self):
@@ -105,9 +117,10 @@ class DigClock(object):
         Get a formatted time string
         Called by: self.run_clock()
         """
+        time_as_tm = time.localtime(self.args.t)
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
-        self.face += time.strftime(time_str)   # self.cur_time.strftime(time_str)
+        self.face += time.strftime(time_str, time_as_tm)
 
     def print_face(self):
         """
