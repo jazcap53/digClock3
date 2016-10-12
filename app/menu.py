@@ -1,10 +1,9 @@
 from __future__ import print_function
 import os
 import time
-# TODO: import entire menu_data package
-from menu_data import menu_list
-from menu_data import header, message, footer
-from menu_data import bad_combinations
+import importlib
+import menu_data
+
 
 # TODO: make err_msg into an @property
 # TODO: simplify flow
@@ -22,7 +21,7 @@ class Menu:
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
-        self.bad_combinations = bad_combinations
+        self.bad_combinations = menu_data.bad_combinations
         self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
 
@@ -111,8 +110,9 @@ class Menu:
 
     def good_combination(self):
         """
-
-        :return:
+        Checks for validity of *combinations* of selections.
+        :return: True if combination of inputs so far is valid
+                 False otherwise
         """
         if not self.selection:  # self.selection has already been strip()ped
             new_value = self.get_current_default()
@@ -166,12 +166,13 @@ class Menu:
 def cycle_menus():
     """
     Calls run() for each menu
-    :return: the collected user choices for each menu run
+    :return: the collected user choices for the menus run
     Called by: client get_time.run_clock()
     """
     global_chosen = []  # holds selections from all menus
-    for m in menu_list:
-        this_menu = Menu(m, global_chosen, header, message, footer)
+    for m in menu_data.menu_list:
+        this_menu = Menu(m, global_chosen, menu_data.header,
+                         menu_data.message, menu_data.footer)
         # read and display menu, get and validate selection,
         # update saved choices
         this_menu.run()

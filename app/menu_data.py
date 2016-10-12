@@ -47,12 +47,12 @@ menu_list = [[
     ]]
 
 bad_combinations = {
-        (1, 1): 'foreground color must not be the same as background color',
-        (2, 2): 'foreground color must not be the same as background color',
-        (3, 3): 'foreground color must not be the same as background color',
-        (5, 4): 'foreground color must not be the same as background color',
-        (8, 5): 'foreground color must not be the same as background color',
-        (11, 6): 'foreground color must not be the same as background color',
-        (13, 7): 'foreground color must not be the same as background color',
-        (14, 8): 'foreground color must not be the same as background color'
+        (1, 1): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (2, 2): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (3, 3): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (5, 4): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (8, 5): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (11, 6): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (13, 7): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR',
+        (14, 8): 'BACKGROUND COLOR MUST BE DIFFERENT FROM FOREGROUND COLOR'
 }
