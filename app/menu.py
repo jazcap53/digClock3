@@ -37,7 +37,7 @@ class Menu:
         self.display()
         while True:  # loop until user makes a valid selection
             self.get_selection()
-            test_1 = self.validate_selection(len(self.entries))  # TODO: don't pass parameter
+            test_1 = self.validate_selection()
             test_2 = self.good_combination()
             if not test_2:
                 self.print_err_msg()
@@ -87,16 +87,15 @@ class Menu:
         """
         self.selection = raw_input('\n\n' + self.footer + ' ')
 
-    def validate_selection(self, menu_len):
+    def validate_selection(self):
         """
         Checks that user input represents an integer in the correct
         range, or is a null string.
-        :param menu_len: a two-item menu will have entries 0, 1, 2
-               where entry 0 holds null strings to mimic 1-indexing
         :return: True on good input
                  False otherwise
         Called by: self.run()
         """
+        menu_len = len(self.entries)
         ret = False
         self.selection = self.selection.strip()
         if self.selection:
@@ -115,10 +114,9 @@ class Menu:
 
         :return:
         """
-        if not self.selection:
+        if not self.selection:  # self.selection has already been strip()ped
             new_value = self.get_current_default()
         else:
-            # self.selection has already been strip()ped
             selection_int = int(self.selection)
             new_value = int(self.entries[selection_int][0])
         choices_so_far = [int(item[1]) for item in self.chosen]
