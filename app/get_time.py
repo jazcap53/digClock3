@@ -19,7 +19,7 @@ import pyaudio
 import wave
 
 import nums
-import menu
+from menu import CycleMenus
 from args_actions import ParseTime
 
 
@@ -126,7 +126,8 @@ class DigClock(object):
         if self.args.d:
             self.chosen = self.DEFAULTS
         else:
-            self.chosen = menu.cycle_menus()
+            # self.chosen = menu.cycle_menus()
+            self.chosen = CycleMenus().cycle()
 
     def get_cur_time_str(self):
         """

@@ -4,6 +4,32 @@ import time
 import menu_data
 
 
+class CycleMenus(object):
+
+    def __init__(self):
+        self.global_chosen = []  # holds selections from all menus
+
+    def cycle(self):
+        """
+        Calls run() for each menu
+        :return: the collected user choices for the menus run
+        Called by: client get_time.run_clock()
+        """
+        #  global_chosen = []
+        for m in menu_data.menu_list:
+            this_menu = Menu(m, self.global_chosen, menu_data.header,
+                             menu_data.message, menu_data.footer)
+            # read and display menu, get and validate selection,
+            # update saved choices
+            this_menu.run()
+            self.global_chosen.append(this_menu.chosen[-1])
+        os.system('clear')
+        for item in self.global_chosen:  # self.chosen is empty for first menu
+            print('Your {}: {}'.format(item[0], item[2]))
+        _ = raw_input('\n\nPress \'Enter\' to start clock...')
+        return self.global_chosen
+
+
 # TODO: make err_msg into an @property ?
 # TODO: simplify flow ?
 # TODO: prepend '_' to 'private' data member names ?
@@ -166,25 +192,6 @@ class Menu(object):
         self.chosen.append(list_to_append)
 
 
-def cycle_menus():
-    """
-    Calls run() for each menu
-    :return: the collected user choices for the menus run
-    Called by: client get_time.run_clock()
-    """
-    global_chosen = []  # holds selections from all menus
-    for m in menu_data.menu_list:
-        this_menu = Menu(m, global_chosen, menu_data.header,
-                         menu_data.message, menu_data.footer)
-        # read and display menu, get and validate selection,
-        # update saved choices
-        this_menu.run()
-        global_chosen.append(this_menu.chosen[-1])
-    os.system('clear')
-    for item in global_chosen:  # self.chosen is empty for first menu
-        print('Your {}: {}'.format(item[0], item[2]))
-    _ = raw_input('\n\nPress \'Enter\' to start clock...')
-    return global_chosen
-
 if __name__ == '__main__':
-    cycle_menus()
+    c = CycleMenus()
+    c.cycle()
