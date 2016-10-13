@@ -55,3 +55,12 @@ class TestMenu(unittest.TestCase):
         self.my_menu.selection = 'y\n'
         self.my_menu.validate_selection()
         self.assertEqual(self.my_menu.err_msg, '\n\nPlease input an integer value')
+
+    def test_bad_combination_of_choices_is_rejected(self):
+        self.my_menu.read()
+        self.my_menu.update_chosen('14')
+        self.my_menu = Menu(menu_list[1], [], header, message, footer)
+        self.my_menu.read()
+        self.my_menu.update_chosen('8')
+        print self.my_menu.chosen
+        self.assertFalse(self.my_menu.good_combination())

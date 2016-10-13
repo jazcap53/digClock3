@@ -4,9 +4,10 @@ import time
 import menu_data
 
 
-# TODO: make err_msg into an @property
-# TODO: simplify flow
-class Menu:
+# TODO: make err_msg into an @property ?
+# TODO: simplify flow ?
+# TODO: prepend '_' to 'private' data member names ?
+class Menu(object):
     """
     Class provided: an interactive menu presented to user
     Instantiated by global function cycle_menus()
@@ -55,8 +56,7 @@ class Menu:
         Reads the menu data
         Called by: self.run()
         """
-        enum_menu_data = enumerate(self.source)
-        for ix, item in enum_menu_data:
+        for ix, item in enumerate(self.source):
             if ix == 0:
                 self.description = item[:]
             else:
@@ -155,8 +155,7 @@ class Menu:
         description_as_list = [self.description]
         if sel:
             list_to_append = description_as_list
-            entry_enum = enumerate(self.entries[int(sel)])
-            for ix, entry in entry_enum:
+            for ix, entry in enumerate(self.entries[int(sel)]):
                 if ix == 1:
                     short_entry = entry.rstrip(' ()*')
                     list_to_append += [short_entry]
