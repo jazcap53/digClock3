@@ -9,9 +9,10 @@ Dig, Clock! is a menu-driven digital clock, written in Python 2.7, that runs in 
 ## Features
 
 * Simple menus allow you to choose text color, background color, 12-hour or 24-hour display, and silent or chime mode
-* Select all default choices and skip the menus by running with the -d switch
+* Select all default choices and skip the menus by running with the **-d** switch
 * Utf-8 encoded box-drawing characters make large, clear, gap-less digits
 * Timekeeping as accurate as your system clock
+* _(New!)_ Test Mode (**-t** switch) lets you start the clock from a specified time, with or without the **-d** switch
 
 ## Dependencies
 Python 2.7 -- available via your package manager  

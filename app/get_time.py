@@ -10,14 +10,17 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 """
 from __future__ import print_function
 import os
+# import sys
 import time
 import argparse
+# import importlib
 
 import pyaudio
 import wave
 
 import nums
 import menu
+from args_actions import ParseTime
 
 
 ENDC = '\033[0m'
@@ -27,12 +30,13 @@ BOLD = '\033[01m'
 class DigClock(object):
     """
     Class provided:
-        Show a digital clock, in the terminal, that advances once per second.
-        Play the Westminster Chimes for each quarter hour if selected.
+        Shows a digital clock, in the terminal, that advances once per second.
+        Plays the Westminster Chimes for each quarter hour if selected.
         Text color, background color, 12- or 24-hour format, and chime or silent
-            modes are chosen by user from menus.
+            modes may be chosen by the user from menus.
+        Default mode (skip the menus) and Test mode (start from a specified time)
+            may be enabled with command-line switches -d and -t, respectively
     """
-
     # the characters of the clock face
     digits = {'0': nums.Zero, '1': nums.One, '2': nums.Two, '3': nums.Three,
               '4': nums.Four, '5': nums.Five, '6': nums.Six, '7': nums.Seven,
@@ -44,30 +48,35 @@ class DigClock(object):
                 ['chime mode', ' 1', 'CHIME']]  # default menu choices
 
     def __init__(self):
-        self.w_f = None         # .wav file
-        self.stream = None      # stream to which wave file is output
-        self.face = None        # clock face
-        self.p_aud = None       # instance of PyAudio
-        self.chosen = None      # holds menu choices
-        self.cur_time = None    # holds current unformatted time
-        self.arg_parser = None  # holds argument parser object
-        self.args = None        # c. l. arguments
+        self.w_f = None            # .wav file
+        self.stream = None         # stream to which wave file is output
+        self.face = None           # clock face
+        self.p_aud = None          # instance of PyAudio
+        self.chosen = None         # menu choices
+        self.cur_time = None       # current time as time.struct_tm
+        self.arg_parser = None     # argument parser object
+        self.args = None           # c. l. arguments
+        self.secs_since_start = 0
 
     def run_clock(self):
         """
         Run the clock and chimes
+        :return: None
         Called by: client code
         """
+        self.read_switches()
+        self.set_menu_option()
         try:
             os.system('tput civis')   # make cursor invisible
             print(BOLD)
             print(self.chosen[0][3])  # set text color
             print(self.chosen[1][3])  # set background color
             # PyAudio provides Python bindings for PortAudio audio i/o library
-            self.p_aud = pyaudio.PyAudio()
+            if self.chosen[3][2] == 'CHIME':
+                self.p_aud = pyaudio.PyAudio()
             while True:
-                self.cur_time = time.localtime()
-                self.get_face()
+                self.set_cur_time()
+                self.get_cur_time_str()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
                 if chime_file_name is not None:  # we should play a chime now
@@ -76,40 +85,63 @@ class DigClock(object):
         finally:
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
-            self.p_aud.terminate()
+            if self.p_aud is not None:
+                self.p_aud.terminate()
             os.system('clear')
 
     def read_switches(self):
         """
         Handle command-line switches
-        Called by: self.run_clock()
+        :return: None
+        Called by: self.set_up_c_l_args()
         """
         self.arg_parser = argparse.ArgumentParser(description='Run a digital clock in the terminal.')
         self.arg_parser.add_argument('-d',
-                                     help='skip the menus: accept all\
-                                     default arguments',
+                                     help='skip the menus: accept all'
+                                     ' default arguments',
                                      action='store_true')
+        self.arg_parser.add_argument('-t', metavar='timestring', type=str,
+                                     help='test mode: start clock from given time'
+                                          ' (in 24-hour HH:MM:SS format)',
+                                          action=ParseTime)
         self.args = self.arg_parser.parse_args()
 
-    def set_up_c_l_args(self):
-        self.read_switches()
+    def set_cur_time(self):
+        """
+        Set current time according to -t switch
+        :return: None
+        Called by: self.run_clock(), self.play_chime()
+        """
+        if self.args.t:
+            self.cur_time = time.localtime(self.args.t + self.secs_since_start)
+        else:
+            self.cur_time = time.localtime()
+
+    def set_menu_option(self):
+        """
+        Set menu option according to -d switch
+        :return: None
+        Called by: self.run_clock()
+        """
         if self.args.d:
             self.chosen = self.DEFAULTS
         else:
             self.chosen = menu.cycle_menus()
 
-    def get_face(self):
+    def get_cur_time_str(self):
         """
-        Get a formatted time string
-        Called by: self.run_clock()
+        Get a formatted time string with current time
+        :return: None
+        Called by: self.run_clock(), self.play_chime()
         """
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
-        self.face += time.strftime(time_str)   # self.cur_time.strftime(time_str)
+        self.face += time.strftime(time_str, self.cur_time)
 
     def print_face(self):
         """
         Display the face of the clock
+        :return: None
         Called by: self.run_clock()
         """
         _ = os.system('clear')
@@ -134,6 +166,7 @@ class DigClock(object):
     def print_am_pm(self):
         """
         In 12-HOUR mode, print AM or PM
+        :return: None
         Called by: self.print_face()
         """
         if time.strftime('%p', self.cur_time)[0] == 'A':
@@ -147,19 +180,17 @@ class DigClock(object):
 
     def check_for_chimes(self):
         """
-        If a chime or bell should begin playing now,
-        return the name of its .wav file
+        Check whether a sound should begin playing now
+        :return: if a sound should begin now:
+                     the name of its .wav file
+                 else:
+                     None
         Called by: self.run_clock()
         """
         if self.chosen[3][2] == 'SILENT':  # if chimes are off
             return None
         chime_file_name = None
-        if not self.face:
-            return None
-        # face is 3 spaces plus time as hh:mm:ss
-        secs = self.face[9:]
-        mins = self.face[6:8]
-        hrs = self.face[3:5]
+        hrs, mins, secs = self.face.lstrip().split(':')
         if mins == '59' and secs == '38':
             # start hourly bells 22 seconds early
             chime_file_name = 'app/chimes/q4mono.wav'
@@ -177,20 +208,24 @@ class DigClock(object):
 
     def get_hrs(self, h_str):
         """
-        Chime pattern is the same for 12-Hour and 24-hour display
+        Make chime pattern the same for 12-Hour and 24-hour display
+        :param h_str: the hour as a string in 12- or 24- hour format
+        :return: the hour as a string in 12-hour format
         Called by: self.check_for_chimes()
         """
         if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
-            # Convert '00'..'23' hours to '01'..'12'
-            hrs_as_int = 12 if h_str == '00' or h_str == '12' else int(h_str) % 12
+            hrs_as_int = 12 if h_str == '00' or h_str == '12' else\
+                               int(h_str) % 12
             hrs_as_str = '{:02d}'.format(hrs_as_int)
             return hrs_as_str
 
     def play_chime(self, chime_file_name):
         """
-        Play a chime or hourly bell
+        Play an audio file
+        :param chime_file_name: the name of a .wav file to play
+        :return: None
         Called by: self.run_clock()
         """
         self.w_f = wave.open(chime_file_name, 'rb')
@@ -208,6 +243,8 @@ class DigClock(object):
             if not self.stream.is_active():
                 break
             self.await_new_sec()
+            self.set_cur_time()
+            self.get_cur_time_str()
             self.print_face()
         self.stream.stop_stream()
         self.stream.close()
@@ -216,12 +253,13 @@ class DigClock(object):
     def await_new_sec(self):
         """
         Sleep until the number of seconds on the system clock changes
-        Called by: self.play_chime()
+        :return: None
+        Called by: self.run_clock(), self.play_chime()
         """
-        old_face = self.face
-        while old_face == self.face:
+        old_secs = time.strftime('%S')
+        while time.strftime('%S') == old_secs:
             time.sleep(.01)
-            self.get_face()
+        self.secs_since_start += 1
 
     def callback(self, in_data, frame_count, time_info, status):
         """
@@ -234,5 +272,4 @@ class DigClock(object):
 
 if __name__ == '__main__':
     clk = DigClock()
-    clk.set_up_c_l_args()
     clk.run_clock()

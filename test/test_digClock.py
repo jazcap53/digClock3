@@ -4,7 +4,7 @@ from mock import patch
 
 import sys
 from app.get_time import DigClock
-import app.menu
+# import app.menu
 
 
 class TestDigClock(unittest.TestCase):
