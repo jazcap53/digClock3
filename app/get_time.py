@@ -55,6 +55,7 @@ class DigClock(object):
         self.cur_time = None    # holds current unformatted time
         self.arg_parser = None  # holds argument parser object
         self.args = None        # c. l. arguments
+        self.secs_since_start = 0
 
     def run_clock(self):
         """
@@ -70,7 +71,10 @@ class DigClock(object):
             if self.chosen[3][2] == 'CHIME':
                 self.p_aud = pyaudio.PyAudio()
             while True:
-                self.cur_time = time.localtime()
+                if self.args.t:
+                    self.cur_time = time.localtime(self.args.t + self.secs_since_start)
+                else:
+                    self.cur_time = time.localtime()
                 self.get_face()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
@@ -117,7 +121,10 @@ class DigClock(object):
         Get a formatted time string
         Called by: self.run_clock()
         """
-        time_as_tm = time.localtime(self.args.t)
+        if self.args.t:
+            time_as_tm = time.localtime(self.args.t + self.secs_since_start)
+        else:
+            time_as_tm = time.localtime()
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
         self.face += time.strftime(time_str, time_as_tm)
@@ -223,6 +230,7 @@ class DigClock(object):
             if not self.stream.is_active():
                 break
             self.await_new_sec()
+            self.get_face()
             self.print_face()
         self.stream.stop_stream()
         self.stream.close()
@@ -231,12 +239,14 @@ class DigClock(object):
     def await_new_sec(self):
         """
         Sleep until the number of seconds on the system clock changes
-        Called by: self.play_chime()
+        Called by: self.run_clock(), self.play_chime()
         """
-        old_face = self.face
-        while old_face == self.face:
+        old_secs = time.strftime('%S')
+        # old_face = self.face
+        # while old_face == self.face:
+        while time.strftime('%S') == old_secs:
             time.sleep(.01)
-            self.get_face()
+        self.secs_since_start += 1
 
     def callback(self, in_data, frame_count, time_info, status):
         """
