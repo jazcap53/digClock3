@@ -187,12 +187,7 @@ class DigClock(object):
         if self.chosen[3][2] == 'SILENT':  # if chimes are off
             return None
         chime_file_name = None
-        if not self.face:
-            return None
-        # face is 3 spaces plus time as hh:mm:ss
-        secs = self.face[9:]
-        mins = self.face[6:8]
-        hrs = self.face[3:5]
+        hrs, mins, secs = self.face.lstrip().split(':')
         if mins == '59' and secs == '38':
             # start hourly bells 22 seconds early
             chime_file_name = 'app/chimes/q4mono.wav'
@@ -217,7 +212,8 @@ class DigClock(object):
             return h_str
         else:
             # Convert '00'..'23' hours to '01'..'12'
-            hrs_as_int = 12 if h_str == '00' or h_str == '12' else int(h_str) % 12
+            hrs_as_int = 12 if h_str == '00' or h_str == '12' else\
+                               int(h_str) % 12
             hrs_as_str = '{:02d}'.format(hrs_as_int)
             return hrs_as_str
 
