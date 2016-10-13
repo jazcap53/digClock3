@@ -61,6 +61,7 @@ class DigClock(object):
     def run_clock(self):
         """
         Run the clock and chimes
+        :return: None
         Called by: client code
         """
         self.read_switches()
@@ -108,7 +109,7 @@ class DigClock(object):
     def set_cur_time(self):
         """
         Set current time according to -t switch
-        :return:
+        :return: None
         Called by: self.run_clock(), self.play_chime()
         """
         if self.args.t:
@@ -130,6 +131,7 @@ class DigClock(object):
     def get_cur_time_str(self):
         """
         Get a formatted time string with current time
+        :return: None
         Called by: self.run_clock(), self.play_chime()
         """
         self.face = ' ' * 3
@@ -139,6 +141,7 @@ class DigClock(object):
     def print_face(self):
         """
         Display the face of the clock
+        :return: None
         Called by: self.run_clock()
         """
         _ = os.system('clear')
@@ -205,13 +208,14 @@ class DigClock(object):
 
     def get_hrs(self, h_str):
         """
-        Chime pattern is the same for 12-Hour and 24-hour display
+        Make chime pattern the same for 12-Hour and 24-hour display
+        :param h_str: the hour as a string in 12- or 24- hour format
+        :return: the hour as a string in 12-hour format
         Called by: self.check_for_chimes()
         """
         if self.chosen[2][2] == '12-HOUR':  # output already in 12-HOUR format
             return h_str
         else:
-            # Convert '00'..'23' hours to '01'..'12'
             hrs_as_int = 12 if h_str == '00' or h_str == '12' else\
                                int(h_str) % 12
             hrs_as_str = '{:02d}'.format(hrs_as_int)
@@ -219,7 +223,9 @@ class DigClock(object):
 
     def play_chime(self, chime_file_name):
         """
-        Play a chime or hourly bell
+        Play an audio file
+        :param chime_file_name: the name of a .wav file to play
+        :return: None
         Called by: self.run_clock()
         """
         self.w_f = wave.open(chime_file_name, 'rb')
@@ -247,6 +253,7 @@ class DigClock(object):
     def await_new_sec(self):
         """
         Sleep until the number of seconds on the system clock changes
+        :return: None
         Called by: self.run_clock(), self.play_chime()
         """
         old_secs = time.strftime('%S')
