@@ -62,6 +62,8 @@ class DigClock(object):
         Run the clock and chimes
         Called by: client code
         """
+        self.read_switches()
+        self.set_menu_option()
         try:
             os.system('tput civis')   # make cursor invisible
             print(BOLD)
@@ -71,11 +73,8 @@ class DigClock(object):
             if self.chosen[3][2] == 'CHIME':
                 self.p_aud = pyaudio.PyAudio()
             while True:
-                if self.args.t:
-                    self.cur_time = time.localtime(self.args.t + self.secs_since_start)
-                else:
-                    self.cur_time = time.localtime()
-                self.get_face()
+                self.set_cur_time()
+                self.get_cur_time_str()
                 self.print_face()
                 chime_file_name = self.check_for_chimes()
                 if chime_file_name is not None:  # we should play a chime now
@@ -87,18 +86,6 @@ class DigClock(object):
             if self.p_aud is not None:
                 self.p_aud.terminate()
             os.system('clear')
-
-    def set_up_c_l_args(self):
-        """
-
-        :return:
-        Called by: main()
-        """
-        self.read_switches()
-        if self.args.d:
-            self.chosen = self.DEFAULTS
-        else:
-            self.chosen = menu.cycle_menus()
 
     def read_switches(self):
         """
@@ -116,18 +103,36 @@ class DigClock(object):
                                           action=ParseTime)
         self.args = self.arg_parser.parse_args()
 
-    def get_face(self):
+    def set_cur_time(self):
         """
-        Get a formatted time string
-        Called by: self.run_clock()
+        Set current time according to -t switch
+        :return:
+        Called by: self.run_clock(), self.play_chime()
         """
         if self.args.t:
-            time_as_tm = time.localtime(self.args.t + self.secs_since_start)
+            self.cur_time = time.localtime(self.args.t + self.secs_since_start)
         else:
-            time_as_tm = time.localtime()
+            self.cur_time = time.localtime()
+
+    def set_menu_option(self):
+        """
+        Set menu option according to -d switch
+        :return:
+        Called by: self.run_clock()
+        """
+        if self.args.d:
+            self.chosen = self.DEFAULTS
+        else:
+            self.chosen = menu.cycle_menus()
+
+    def get_cur_time_str(self):
+        """
+        Get a formatted time string with current time
+        Called by: self.run_clock(), self.play_chime()
+        """
         self.face = ' ' * 3
         time_str = "%I:%M:%S" if (self.chosen[2][2] == '12-HOUR') else "%H:%M:%S"
-        self.face += time.strftime(time_str, time_as_tm)
+        self.face += time.strftime(time_str, self.cur_time)
 
     def print_face(self):
         """
@@ -230,7 +235,8 @@ class DigClock(object):
             if not self.stream.is_active():
                 break
             self.await_new_sec()
-            self.get_face()
+            self.set_cur_time()
+            self.get_cur_time_str()
             self.print_face()
         self.stream.stop_stream()
         self.stream.close()
@@ -259,5 +265,4 @@ class DigClock(object):
 
 if __name__ == '__main__':
     clk = DigClock()
-    clk.set_up_c_l_args()
     clk.run_clock()
