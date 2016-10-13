@@ -36,6 +36,9 @@ class Menu:
         while True:  # loop until user makes a valid selection
             self.get_selection()
             test_1 = self.validate_selection()
+            if not test_1:
+                self.print_err_msg()
+                continue
             test_2 = self.good_combination()
             if not test_2:
                 self.print_err_msg()
@@ -62,7 +65,7 @@ class Menu:
                 if item[1] and item[1].endswith(' (*)'):
                     self.default = list(item)
                     self.default[1] = self.default[1].rstrip(' ()*')
-        self.source = None  # gc self.source
+        self.source = None  # garbage collect self.source  # TODO: check this
 
     def display(self):
         """
@@ -101,8 +104,10 @@ class Menu:
                 sel_as_int = int(self.selection)
                 if 0 < sel_as_int < menu_len:
                     ret = True
+                else:
+                    self.err_msg = '\n\nSorry. Value entered is out of range.'
             except ValueError:  # input is not an integer
-                pass  # ret is already False
+                self.err_msg = '\n\nPlease input an integer value'
         else:
             ret = True  # empty string is a valid input
         return ret
@@ -142,7 +147,7 @@ class Menu:
     def update_chosen(self, sel):
         """
         Stores option selected by user
-        :param sel: user choice as a string (may be null)
+        :param sel: user choice as a string (may be '')
         Called by: self.run()
         """
         # description is a *string* describing the current menu
