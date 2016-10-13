@@ -47,14 +47,14 @@ class DigClock(object):
                 ['chime mode', ' 1', 'CHIME']]  # default menu choices
 
     def __init__(self):
-        self.w_f = None         # .wav file
-        self.stream = None      # stream to which wave file is output
-        self.face = None        # clock face
-        self.p_aud = None       # instance of PyAudio
-        self.chosen = None      # holds menu choices
-        self.cur_time = None    # holds current unformatted time
-        self.arg_parser = None  # holds argument parser object
-        self.args = None        # c. l. arguments
+        self.w_f = None            # .wav file
+        self.stream = None         # stream to which wave file is output
+        self.face = None           # clock face
+        self.p_aud = None          # instance of PyAudio
+        self.chosen = None         # holds menu choices
+        self.cur_time = None       # holds current unformatted time
+        self.arg_parser = None     # holds argument parser object
+        self.args = None           # c. l. arguments
         self.secs_since_start = 0
 
     def run_clock(self):
