@@ -6,8 +6,10 @@ import menu_data
 
 class CycleMenus(object):
 
-    def __init__(self):
+    def __init__(self, num_to_run=len(menu_data.menu_list)):
         self.global_chosen = []  # holds selections from all menus
+        self.num_to_run = num_to_run
+        self.this_menu = None
 
     def cycle(self):
         """
@@ -16,13 +18,13 @@ class CycleMenus(object):
         Called by: client get_time.run_clock()
         """
         #  global_chosen = []
-        for m in menu_data.menu_list:
-            this_menu = Menu(m, self.global_chosen, menu_data.header,
-                             menu_data.message, menu_data.footer)
+        for m in menu_data.menu_list[: self.num_to_run]:
+            self.this_menu = Menu(m, self.global_chosen, menu_data.header,
+                                  menu_data.message, menu_data.footer)
             # read and display menu, get and validate selection,
-            # update saved choices
-            this_menu.run()
-            self.global_chosen.append(this_menu.chosen[-1])
+            #     update saved choices
+            self.this_menu.run()
+            self.global_chosen.append(self.this_menu.chosen[-1])
         os.system('clear')
         for item in self.global_chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))

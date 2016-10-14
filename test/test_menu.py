@@ -1,7 +1,9 @@
 import unittest
+# from unittest.mock import patch
 
-from app.menu import Menu
+from app.menu import Menu, CycleMenus
 from app.menu_data import menu_list, header, message, footer
+import app.menu
 
 
 class TestMenu(unittest.TestCase):
@@ -56,11 +58,25 @@ class TestMenu(unittest.TestCase):
         self.my_menu.validate_selection()
         self.assertEqual(self.my_menu.err_msg, '\n\nPlease input an integer value')
 
-    def test_bad_combination_of_choices_is_rejected(self):
-        self.my_menu.read()
-        self.my_menu.update_chosen('14')
-        self.my_menu = Menu(menu_list[1], [], header, message, footer)
-        self.my_menu.read()
-        self.my_menu.update_chosen('8')
-        print self.my_menu.chosen
-        self.assertFalse(self.my_menu.good_combination())
+
+class CycleMenusTest(unittest.TestCase):
+
+    def setUp(self):
+        self.my_cycle = CycleMenus(1)
+        app.menu.raw_input = lambda _: '5'
+        self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.global_chosen,
+                                       header, message, footer)
+        self.my_cycle.this_menu.run()
+        app.menu.raw_input = lambda _: '4'
+        self.my_cycle.this_menu = Menu(menu_list[1], self.my_cycle.this_menu.chosen,
+                                       header, message, footer)
+
+    def test_dummy(self):
+        self.assertEqual(1, 1)
+
+    def test_invalid_selection_combination_is_caught(self):
+        self.my_cycle.this_menu.read()
+        self.my_cycle.this_menu.get_selection()
+        self.my_cycle.this_menu.validate_selection()
+        to_be_tested = self.my_cycle.this_menu.good_combination()
+        self.assertFalse(to_be_tested)
