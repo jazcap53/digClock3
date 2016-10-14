@@ -88,5 +88,4 @@ class CycleMenusTest(unittest.TestCase):
         self.my_cycle.this_menu.read()
         self.my_cycle.this_menu.get_selection()
         self.my_cycle.this_menu.validate_selection()
-        to_be_tested = self.my_cycle.this_menu.good_combination()
-        self.assertFalse(to_be_tested)
+        self.assertFalse(self.my_cycle.this_menu.good_combination())
