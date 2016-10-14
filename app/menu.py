@@ -7,7 +7,7 @@ import menu_data
 class CycleMenus(object):
 
     def __init__(self):
-        self.global_chosen = []  # holds selections from all menus
+        self.chosen = []  # holds selections from all menus
         self.this_menu = None
 
     def cycle(self):
@@ -16,19 +16,18 @@ class CycleMenus(object):
         :return: the collected user choices for the menus run
         Called by: client get_time.run_clock()
         """
-        #  global_chosen = []
         for m in menu_data.menu_list:
-            self.this_menu = Menu(m, self.global_chosen, menu_data.header,
+            self.this_menu = Menu(m, self.chosen, menu_data.header,
                                   menu_data.message, menu_data.footer)
             # read and display menu, get and validate selection,
             #     update saved choices
             self.this_menu.run()
-            self.global_chosen.append(self.this_menu.chosen[-1])
+            self.chosen.append(self.this_menu.chosen[-1])
         os.system('clear')
-        for item in self.global_chosen:  # self.chosen is empty for first menu
+        for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
-        return self.global_chosen
+        return self.chosen  # to DigClock.set_menu_option()
 
 
 # TODO: make err_msg into an @property ?

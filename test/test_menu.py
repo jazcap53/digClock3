@@ -64,7 +64,7 @@ class CycleMenusTest(unittest.TestCase):
     def setUp(self):
         self.my_cycle = CycleMenus()
         app.menu.raw_input = lambda _: '5'
-        self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.global_chosen,
+        self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.chosen,
                                        header, message, footer)
         self.my_cycle.this_menu.run()
 
