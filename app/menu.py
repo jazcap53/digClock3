@@ -6,9 +6,8 @@ import menu_data
 
 class CycleMenus(object):
 
-    def __init__(self, num_to_run=len(menu_data.menu_list)):
+    def __init__(self):
         self.global_chosen = []  # holds selections from all menus
-        self.num_to_run = num_to_run
         self.this_menu = None
 
     def cycle(self):
@@ -18,7 +17,7 @@ class CycleMenus(object):
         Called by: client get_time.run_clock()
         """
         #  global_chosen = []
-        for m in menu_data.menu_list[: self.num_to_run]:
+        for m in menu_data.menu_list:
             self.this_menu = Menu(m, self.global_chosen, menu_data.header,
                                   menu_data.message, menu_data.footer)
             # read and display menu, get and validate selection,

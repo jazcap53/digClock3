@@ -62,19 +62,16 @@ class TestMenu(unittest.TestCase):
 class CycleMenusTest(unittest.TestCase):
 
     def setUp(self):
-        self.my_cycle = CycleMenus(1)
+        self.my_cycle = CycleMenus()
         app.menu.raw_input = lambda _: '5'
         self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.global_chosen,
                                        header, message, footer)
         self.my_cycle.this_menu.run()
+
+    def test_invalid_selection_combination_is_caught(self):
         app.menu.raw_input = lambda _: '4'
         self.my_cycle.this_menu = Menu(menu_list[1], self.my_cycle.this_menu.chosen,
                                        header, message, footer)
-
-    def test_dummy(self):
-        self.assertEqual(1, 1)
-
-    def test_invalid_selection_combination_is_caught(self):
         self.my_cycle.this_menu.read()
         self.my_cycle.this_menu.get_selection()
         self.my_cycle.this_menu.validate_selection()
