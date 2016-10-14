@@ -7,16 +7,10 @@ from app.menu_data import menu_list, header, message, footer
 import app.menu
 
 
-class TestMenu(unittest.TestCase):
+class MenuTest(unittest.TestCase):
 
     def setUp(self):
         self.my_menu = Menu(menu_list[0], [], header, message, footer)
-        self.old_stdout = sys.stdout
-        f = open(os.devnull, 'w')
-        sys.stdout = f
-
-    def tearDown(self):
-        sys.stdout = self.old_stdout
 
     def test_enter_blank_line_is_valid_selection(self):
         self.my_menu.read()
@@ -69,17 +63,11 @@ class TestMenu(unittest.TestCase):
 class CycleMenusTest(unittest.TestCase):
 
     def setUp(self):
-        self.old_stdout = sys.stdout
-        f = open(os.devnull, 'w')
-        sys.stdout = f
         self.my_cycle = CycleMenus()
         app.menu.raw_input = lambda _: '5'
         self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.chosen,
                                        header, message, footer)
         self.my_cycle.this_menu.run()
-
-    def tearDown(self):
-        sys.stdout = self.old_stdout
 
     def test_invalid_selection_combination_is_caught(self):
         app.menu.raw_input = lambda _: '4'
