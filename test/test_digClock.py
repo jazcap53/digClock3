@@ -1,7 +1,6 @@
 import unittest
 import time
 import sys
-import os
 
 from mock import patch
 

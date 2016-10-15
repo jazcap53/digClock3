@@ -1,6 +1,4 @@
 import unittest
-import sys
-import os
 
 from app.menu import Menu, CycleMenus
 from app.menu_data import menu_list, header, message, footer
