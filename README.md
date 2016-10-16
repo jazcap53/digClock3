@@ -23,7 +23,7 @@ PySynth -- available as PySynth-1.1.tar.gz from http://mdoege.github.io/PySynth
 ## Install and run
 Download ```digClock2.tar.gz```.  
 Run ```$ tar xvfz ./digClock2.tar.gz```.  
-Run ```$ python get_time.py```.  
+Run ```$ python dig_clock_2.py```.  
 
 ## Problems? Contact the doctor!
 Take Dig, Clock! and call me at two in the morning.
