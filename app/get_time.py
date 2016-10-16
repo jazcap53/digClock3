@@ -10,16 +10,15 @@ https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 """
 from __future__ import print_function
 import os
-# import sys
 import time
 import argparse
-# import importlib
 
 import pyaudio
 import wave
 
 import nums
 from menu import CycleMenus
+from menu import clear_screen
 from args_actions import ParseTime
 
 
@@ -87,7 +86,7 @@ class DigClock(object):
             os.system('tput cnorm')  # restore normal cursor
             if self.p_aud is not None:
                 self.p_aud.terminate()
-            os.system('clear')
+            clear_screen()
 
     def read_switches(self):
         """
@@ -145,7 +144,7 @@ class DigClock(object):
         :return: None
         Called by: self.run_clock()
         """
-        _ = os.system('clear')
+        clear_screen()
         self.print_digits()
         if self.chosen[2][2] == '12-HOUR':
             self.print_am_pm()

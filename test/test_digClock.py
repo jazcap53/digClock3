@@ -1,6 +1,7 @@
 import unittest
 import time
 import sys
+import os
 
 from mock import patch
 
@@ -11,7 +12,13 @@ import app.menu
 class TestDigClock(unittest.TestCase):
 
     def setUp(self):
+        self.old_stdout = sys.stdout
+        f = open(os.devnull, 'w')
+        sys.stdout = f
         self.clock_test = DigClock()
+
+    def tearDown(self):
+        sys.stdout = self.old_stdout
 
     def test_defaults_are_set_if_c_l_args_have_dash_d(self):
         testargs = ['get_time', '-d']

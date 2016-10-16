@@ -1,7 +1,15 @@
 from __future__ import print_function
-import os
 import time
 import menu_data
+
+
+def clear_screen():
+    """
+    Using this function because calling os.system('clear') affects the
+    output of unit tests.
+    :return: None
+    """
+    print('\n' * 45)
 
 
 class CycleMenus(object):
@@ -14,7 +22,7 @@ class CycleMenus(object):
         """
         Calls run() for each menu
         :return: the collected user choices for the menus run
-        Called by: client get_time.run_clock()
+        Called by: DigClock.run_clock()
         """
         for m in menu_data.menu_list:
             self.this_menu = Menu(m, self.chosen, menu_data.header,
@@ -23,7 +31,7 @@ class CycleMenus(object):
             #     update saved choices
             self.this_menu.run()
             self.chosen.append(self.this_menu.chosen[-1])
-        os.system('clear')
+        clear_screen()
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
@@ -98,7 +106,7 @@ class Menu(object):
         Present current menu to the user.
         Called by: self.run()
         """
-        os.system('clear')
+        clear_screen()
         print(self.header + '\n')
         print(self.message + self.description + ':\n')
         for item in self.entries[1:]:
