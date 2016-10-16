@@ -99,7 +99,6 @@ class Menu(object):
                 if item[1] and item[1].endswith(' (*)'):
                     self.default = list(item)
                     self.default[1] = self.default[1].rstrip(' ()*')
-        self.source = None  # garbage collect self.source  # TODO: check this
 
     def display(self):
         """
