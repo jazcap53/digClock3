@@ -3,6 +3,7 @@ import time
 import menu_data
 
 
+# TODO: update docstrings throughout this file
 def clear_screen():
     """
     Using this function because calling os.system('clear') affects the

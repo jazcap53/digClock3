@@ -9,6 +9,7 @@ from app.get_time import DigClock
 import app.menu
 
 
+# TODO: write more tests if necessary
 class TestDigClock(unittest.TestCase):
 
     def setUp(self):

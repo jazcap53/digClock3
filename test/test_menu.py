@@ -7,6 +7,7 @@ from app.menu_data import menu_list, header, message, footer
 import app.menu
 
 
+# TODO: write more tests if necessary
 class MenuTest(unittest.TestCase):
 
     def setUp(self):
@@ -66,6 +67,7 @@ class MenuTest(unittest.TestCase):
         self.assertEqual(self.my_menu.err_msg, '\n\nPlease input an integer value')
 
 
+# TODO: write more tests if necessary
 class CycleMenusTest(unittest.TestCase):
 
     def setUp(self):
