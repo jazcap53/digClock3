@@ -27,7 +27,7 @@ class CycleMenus(object):
         """
         for m in menu_data.menu_list:
             self.this_menu = Menu(m, self.chosen, menu_data.header,
-                                  menu_data.message, menu_data.footer)
+                                  menu_data.message, menu_data.footer, self.send_choice)
             # read and display menu, get and validate selection
             self.this_menu.run()
             # update saved choices
@@ -38,14 +38,18 @@ class CycleMenus(object):
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
         return self.chosen  # to DigClock.set_menu_option()
 
+
+
     # possible callback to get user's choice from current menu
-    def callback(self, choice):
+    def send_choice(self, choice):
         """
         N.Y.I.
         :param choice:
         :return:
         """
         pass
+
+
 
 
 # TODO: make err_msg into a @property ?
@@ -58,7 +62,7 @@ class Menu(object):
     asterisk) and gets the user's choice.
     Instantiated by global function cycle_menus()
     """
-    def __init__(self, source, chosen, headr, msg, footr):
+    def __init__(self, source, chosen, headr, msg, footr, send_choice):
         self.source = source
         self.header = headr
         self.message = msg
@@ -70,6 +74,7 @@ class Menu(object):
         self.bad_combinations = menu_data.bad_combinations
         self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
+        self.send_choice = send_choice
 
     def run(self):
         """

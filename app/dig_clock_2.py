@@ -18,7 +18,6 @@ import wave
 
 import nums
 from menu import CycleMenus
-from menu import clear_screen
 from args_actions import ParseTime
 
 
@@ -86,7 +85,7 @@ class DigClock(object):
             os.system('tput cnorm')  # restore normal cursor
             if self.p_aud is not None:
                 self.p_aud.terminate()
-            clear_screen()
+            os.system('clear')
 
     def read_switches(self):
         """
@@ -128,13 +127,17 @@ class DigClock(object):
             # present the menus and get the choices
             self.chosen = CycleMenus().cycle()
 
+
+
     # possible callback to retrieve user choices from CycleMenus
-    def cycle_menus_callback(self):
+    def cycle_menus_callback(self, user_choice):
         """
         N.Y.I.
         :return:
         """
         pass
+
+
 
     def get_cur_time_str(self):
         """
@@ -152,7 +155,7 @@ class DigClock(object):
         :return: None
         Called by: self.run_clock()
         """
-        clear_screen()
+        os.system('clear')
         self.print_digits()
         if self.chosen[2][2] == '12-HOUR':
             self.print_am_pm()
