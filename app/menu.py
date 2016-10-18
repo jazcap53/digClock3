@@ -21,7 +21,7 @@ class CycleMenus(object):
 
     def cycle(self):
         """
-        Calls run() for each menu
+        Calls run() for each menu in turn.
         :return: the collected user choices for the menus run
         Called by: DigClock.run_clock()
         """
@@ -38,13 +38,18 @@ class CycleMenus(object):
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
         return self.chosen  # to DigClock.set_menu_option()
 
+    def callback(self, choice):
+        pass
 
-# TODO: make err_msg into an @property ?
+
+# TODO: make err_msg into a @property ?
 # TODO: simplify flow ?
 # TODO: prepend '_' to 'private' data member names ?
 class Menu(object):
     """
     Class provided: an interactive menu presented to user
+    The menu shows options (with the default option marked by an
+    asterisk) and gets the user's choice.
     Instantiated by global function cycle_menus()
     """
     def __init__(self, source, chosen, headr, msg, footr):
