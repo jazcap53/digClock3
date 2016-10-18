@@ -125,8 +125,16 @@ class DigClock(object):
         if self.args.d:
             self.chosen = self.DEFAULTS
         else:
-            # self.chosen = menu.cycle_menus()
+            # present the menus and get the choices
             self.chosen = CycleMenus().cycle()
+
+    # possible callback to retrieve user choices from CycleMenus
+    def cycle_menus_callback(self):
+        """
+        N.Y.I.
+        :return:
+        """
+        pass
 
     def get_cur_time_str(self):
         """

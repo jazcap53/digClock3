@@ -28,9 +28,9 @@ class CycleMenus(object):
         for m in menu_data.menu_list:
             self.this_menu = Menu(m, self.chosen, menu_data.header,
                                   menu_data.message, menu_data.footer)
-            # read and display menu, get and validate selection,
-            #     update saved choices
+            # read and display menu, get and validate selection
             self.this_menu.run()
+            # update saved choices
             self.chosen.append(self.this_menu.chosen[-1])
         clear_screen()
         for item in self.chosen:  # self.chosen is empty for first menu
@@ -38,7 +38,13 @@ class CycleMenus(object):
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
         return self.chosen  # to DigClock.set_menu_option()
 
+    # possible callback to get user's choice from current menu
     def callback(self, choice):
+        """
+        N.Y.I.
+        :param choice:
+        :return:
+        """
         pass
 
 
