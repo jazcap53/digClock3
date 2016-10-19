@@ -71,6 +71,7 @@ class Menu(object):
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
+        # self.reformatted_selection = None
         self.bad_combinations = menu_data.bad_combinations
         self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
@@ -101,7 +102,9 @@ class Menu(object):
                 self.err_msg = '\n\nINPUT ERROR'
                 self.print_err_msg()
         # TODO: examine effects of this call
-        self.update_chosen(self.selection)
+        list_to_send = self.format_choice(self.selection)
+        # callback sends user menu choice back to CycleMenus object
+        self.send_choice(list_to_send)
 
     def read(self):
         """
@@ -196,28 +199,30 @@ class Menu(object):
         print('\033[40m')  # black background
 
     # TODO: clarify this code
-    def update_chosen(self, sel):
+    def format_choice(self, selected):
         """
-        Stores option selected by user
-        :param sel: user choice as a string (may be '')
+        Reformat option selected by user
+        :param selected: a string holding the user's choice (e.g., '3')
+                         -- may be '' to represent the default option
+        :return:
         Called by: self.run()
         """
-        # description is a *string* describing the current menu
-        # e.g, 'text color'
-        description_as_list = [self.description]
-        if sel:
-            list_to_append = description_as_list
-            for ix, entry in enumerate(self.entries[int(sel)]):
-                if ix == 1:
+        # self.description is a string describing the current menu
+        # e.g., 'text color'
+        if selected:
+            list_to_send = [self.description]
+            # self.entries is a list of tuples
+            # each tuple holds strings
+            for ix, entry in enumerate(self.entries[int(selected)]):
+                # replace the trailing ' (*)' in the default selection
+                if ix == 1 and '*' in entry:
                     short_entry = entry.rstrip(' ()*')
-                    list_to_append += [short_entry]
+                    list_to_send += [short_entry]
                 else:
-                    list_to_append += [entry]
+                    list_to_send += [entry]
         else:
-            list_to_append = description_as_list + self.default
-        # callback sends user menu choice back to CycleMenus object
-        self.send_choice(list_to_append)
-        # self.chosen.append(list_to_append)
+            list_to_send = [self.description] + self.default
+        return list_to_send
 
 if __name__ == '__main__':
     c = CycleMenus()
