@@ -71,7 +71,7 @@ class Menu(object):
         self.selection = None
         self.reformatted_selection = None
         self.bad_combinations = menu_data.bad_combinations
-        self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
+        self.chosen = chosen[:]
         self.err_msg = None
         self.send_choice = send_choice
 
@@ -200,7 +200,6 @@ class Menu(object):
         time.sleep(2)
         print('\033[40m')  # black background
 
-    # TODO: clarify this code
     def reformat_selection(self, selected):
         """
         Reformat option selected by user
