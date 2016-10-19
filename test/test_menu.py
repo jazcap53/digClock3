@@ -7,11 +7,14 @@ from app.menu_data import menu_list, header, message, footer
 import app.menu
 
 
+# TODO: examine all tests ?
+
 # TODO: write more tests if necessary
 class MenuTest(unittest.TestCase):
 
     def setUp(self):
-        self.my_menu = Menu(menu_list[0], [], header, message, footer)
+        self.my_cycle_menus = CycleMenus()
+        self.my_menu = Menu(menu_list[0], [], header, message, footer, self.my_cycle_menus.send_choice)
         self.old_stdout = sys.stdout
         f = open(os.devnull, 'w')
         sys.stdout = f
@@ -35,12 +38,12 @@ class MenuTest(unittest.TestCase):
     def test_enter_default_values_number_selects_default_value(self):
         self.my_menu.read()
         self.my_menu.update_chosen('7')
-        self.assertEqual(self.my_menu.chosen[0][1], self.my_menu.default[0])
+        self.assertEqual(self.my_cycle_menus.chosen[0][1], self.my_menu.default[0])
 
     def test_enter_nondefault_values_number_selects_nondefault_value(self):
         self.my_menu.read()
         self.my_menu.update_chosen('15')
-        self.assertEqual(self.my_menu.chosen[0][1], '15')
+        self.assertEqual(self.my_cycle_menus.chosen[0][1], '15')
 
     def test_menu_does_not_accept_out_of_range_value(self):
         self.my_menu.read()
@@ -74,20 +77,20 @@ class CycleMenusTest(unittest.TestCase):
         self.old_stdout = sys.stdout
         f = open(os.devnull, 'w')
         sys.stdout = f
-        self.my_cycle = CycleMenus()
+        self.my_cycle_menus = CycleMenus()
         app.menu.raw_input = lambda _: '5'
-        self.my_cycle.this_menu = Menu(menu_list[0], self.my_cycle.chosen,
-                                       header, message, footer)
-        self.my_cycle.this_menu.run()
+        self.my_cycle_menus.this_menu = Menu(menu_list[0], self.my_cycle_menus.chosen,
+                                             header, message, footer, self.my_cycle_menus.send_choice)
+        self.my_cycle_menus.this_menu.run()
 
     def tearDown(self):
         sys.stdout = self.old_stdout
 
     def test_invalid_selection_combination_is_caught(self):
         app.menu.raw_input = lambda _: '4'
-        self.my_cycle.this_menu = Menu(menu_list[1], self.my_cycle.this_menu.chosen,
-                                       header, message, footer)
-        self.my_cycle.this_menu.read()
-        self.my_cycle.this_menu.get_selection()
-        self.my_cycle.this_menu.validate_selection()
-        self.assertFalse(self.my_cycle.this_menu.good_combination())
+        self.my_cycle_menus.this_menu = Menu(menu_list[1], self.my_cycle_menus.chosen,
+                                             header, message, footer, self.my_cycle_menus.send_choice)
+        self.my_cycle_menus.this_menu.read()
+        self.my_cycle_menus.this_menu.get_selection()
+        self.my_cycle_menus.this_menu.validate_selection()
+        self.assertFalse(self.my_cycle_menus.this_menu.good_combination())

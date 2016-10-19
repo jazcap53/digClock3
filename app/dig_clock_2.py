@@ -128,7 +128,7 @@ class DigClock(object):
             self.chosen = CycleMenus().cycle()
 
 
-
+    # TODO: implement this callback ?
     # possible callback to retrieve user choices from CycleMenus
     def cycle_menus_callback(self, user_choice):
         """

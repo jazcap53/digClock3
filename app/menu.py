@@ -1,13 +1,18 @@
 from __future__ import print_function
 import time
 import menu_data
+# TODO: import subprocess, use
+# TODO: rows, columns = subprocess.popen('stty size', 'r').read().split()
+# TODO: to get terminal window size
+
+# TODO: find out how to close subprocess after CycleMenus completes
 
 
 # TODO: update docstrings throughout this file
 def clear_screen():
     """
-    Using this function because calling os.system('clear') affects the
-    output of unit tests.
+    Using this function because calling os.system('clear') inserts
+    multiple blank lines into the output of unit tests.
     :return: None
     """
     print('\n' * 45)
@@ -30,26 +35,21 @@ class CycleMenus(object):
                                   menu_data.message, menu_data.footer, self.send_choice)
             # read and display menu, get and validate selection
             self.this_menu.run()
-            # update saved choices
-            self.chosen.append(self.this_menu.chosen[-1])
         clear_screen()
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
+        # TODO: replace with callback in DigClock?
         return self.chosen  # to DigClock.set_menu_option()
 
-
-
-    # possible callback to get user's choice from current menu
     def send_choice(self, choice):
         """
-        N.Y.I.
+        Callback handed to Menu object.
+        Retrieves the user's menu selection.
         :param choice:
-        :return:
+        :return: None
         """
-        pass
-
-
+        self.chosen.append(choice)
 
 
 # TODO: make err_msg into a @property ?
@@ -100,6 +100,7 @@ class Menu(object):
             else:
                 self.err_msg = '\n\nINPUT ERROR'
                 self.print_err_msg()
+        # TODO: examine effects of this call
         self.update_chosen(self.selection)
 
     def read(self):
@@ -194,6 +195,7 @@ class Menu(object):
         time.sleep(2)
         print('\033[40m')  # black background
 
+    # TODO: clarify this code
     def update_chosen(self, sel):
         """
         Stores option selected by user
@@ -213,8 +215,9 @@ class Menu(object):
                     list_to_append += [entry]
         else:
             list_to_append = description_as_list + self.default
-        self.chosen.append(list_to_append)
-
+        # callback sends user menu choice back to CycleMenus object
+        self.send_choice(list_to_append)
+        # self.chosen.append(list_to_append)
 
 if __name__ == '__main__':
     c = CycleMenus()
