@@ -71,7 +71,7 @@ class Menu(object):
         self.entries = [('', '', '')]  # make self.entries 1-indexed
         self.default = None
         self.selection = None
-        # self.reformatted_selection = None
+        self.reformatted_selection = None
         self.bad_combinations = menu_data.bad_combinations
         self.chosen = chosen[:]  # TODO: comment on why [:] is necessary
         self.err_msg = None
@@ -102,9 +102,9 @@ class Menu(object):
                 self.err_msg = '\n\nINPUT ERROR'
                 self.print_err_msg()
         # TODO: examine effects of this call
-        list_to_send = self.format_choice(self.selection)
-        # callback sends user menu choice back to CycleMenus object
-        self.send_choice(list_to_send)
+        self.reformat_selection(self.selection)
+        # callback sends reformatted user menu choice back to CycleMenus object
+        self.send_choice(self.reformatted_selection)
 
     def read(self):
         """
@@ -199,7 +199,7 @@ class Menu(object):
         print('\033[40m')  # black background
 
     # TODO: clarify this code
-    def format_choice(self, selected):
+    def reformat_selection(self, selected):
         """
         Reformat option selected by user
         :param selected: a string holding the user's choice (e.g., '3')
@@ -210,19 +210,19 @@ class Menu(object):
         # self.description is a string describing the current menu
         # e.g., 'text color'
         if selected:
-            list_to_send = [self.description]
+            self.reformatted_selection = [self.description]
             # self.entries is a list of tuples
             # each tuple holds strings
             for ix, entry in enumerate(self.entries[int(selected)]):
                 # replace the trailing ' (*)' in the default selection
                 if ix == 1 and '*' in entry:
                     short_entry = entry.rstrip(' ()*')
-                    list_to_send += [short_entry]
+                    self.reformatted_selection += [short_entry]
                 else:
-                    list_to_send += [entry]
+                    self.reformatted_selection += [entry]
         else:
-            list_to_send = [self.description] + self.default
-        return list_to_send
+            self.reformatted_selection = [self.description] + self.default
+
 
 if __name__ == '__main__':
     c = CycleMenus()
