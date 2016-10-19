@@ -1,11 +1,6 @@
 from __future__ import print_function
 import time
 import menu_data
-# TODO: import subprocess, use
-# TODO: rows, columns = subprocess.popen('stty size', 'r').read().split()
-# TODO: to get terminal window size
-
-# TODO: find out how to close subprocess after CycleMenus completes
 
 
 # TODO: update docstrings throughout this file
@@ -122,6 +117,7 @@ class Menu(object):
 
     def get_valid_selection(self):
         while True:  # loop until user makes a valid selection
+            self.selection = None
             self.get_selection()
             test_1 = self.validate_selection()
             if not test_1:
@@ -197,8 +193,9 @@ class Menu(object):
         """
         print('\033[41m')  # red background
         print(self.err_msg)
-        time.sleep(2)
         print('\033[40m')  # black background
+        print('\033[0m')
+        time.sleep(2)
 
     def reformat_selection(self, selected):
         """
