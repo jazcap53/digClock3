@@ -86,21 +86,7 @@ class Menu(object):
         """
         self.read()
         self.display()
-        while True:  # loop until user makes a valid selection
-            self.get_selection()
-            test_1 = self.validate_selection()
-            if not test_1:
-                self.print_err_msg()
-                continue
-            test_2 = self.good_combination()
-            if not test_2:
-                self.print_err_msg()
-                continue
-            if test_1 and test_2:  # both tests passed
-                break
-            else:
-                self.err_msg = '\n\nINPUT ERROR'
-                self.print_err_msg()
+        self.get_valid_selection()
         # TODO: examine effects of this call
         self.reformat_selection(self.selection)
         # callback sends reformatted user menu choice back to CycleMenus object
@@ -134,6 +120,23 @@ class Menu(object):
         print()
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
+
+    def get_valid_selection(self):
+        while True:  # loop until user makes a valid selection
+            self.get_selection()
+            test_1 = self.validate_selection()
+            if not test_1:
+                self.print_err_msg()
+                continue
+            test_2 = self.good_combination()
+            if not test_2:
+                self.print_err_msg()
+                continue
+            if test_1 and test_2:  # both tests passed
+                break
+            else:
+                self.err_msg = '\n\nINPUT ERROR'
+                self.print_err_msg()
 
     def get_selection(self):
         """
