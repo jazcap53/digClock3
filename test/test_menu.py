@@ -38,11 +38,13 @@ class MenuTest(unittest.TestCase):
     def test_enter_default_values_number_selects_default_value(self):
         self.my_menu.read()
         self.my_menu.reformat_selection('7')
+        self.my_menu.send_choice(self.my_menu.reformatted_selection)
         self.assertEqual(self.my_cycle_menus.chosen[0][1], self.my_menu.default[0])
 
     def test_enter_nondefault_values_number_selects_nondefault_value(self):
         self.my_menu.read()
         self.my_menu.reformat_selection('15')
+        self.my_menu.send_choice(self.my_menu.reformatted_selection)
         self.assertEqual(self.my_cycle_menus.chosen[0][1], '15')
 
     def test_menu_does_not_accept_out_of_range_value(self):

@@ -52,8 +52,6 @@ class CycleMenus(object):
         self.chosen.append(choice)
 
 
-# TODO: make err_msg into a @property ?
-# TODO: simplify flow ?
 # TODO: prepend '_' to 'private' data member names ?
 class Menu(object):
     """
@@ -82,14 +80,15 @@ class Menu(object):
         Calls subroutines that:
             read and display the current menu
             get and validate the user response
-        Called by: global function cycle_menus()
+            reformat that response
+            send response back to CycleMenus object
+        Called by: CycleMenus.cycle()
         """
         self.read()
         self.display()
         self.get_valid_selection()
-        # TODO: examine effects of this call
         self.reformat_selection(self.selection)
-        # callback sends reformatted user menu choice back to CycleMenus object
+        # callback sends reformatted selection back to CycleMenus object
         self.send_choice(self.reformatted_selection)
 
     def read(self):
