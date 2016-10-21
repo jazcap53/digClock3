@@ -218,27 +218,24 @@ class Menu(object):
 
     def reformat_selection(self, selected):
         """
-        Convert option selected by user into a format usable by
-        CycleMenus.
-        :param selected: a string holding the user's choice (e.g., '3')
-                         -- may be '' to represent the default option
-        :return:
+        Reformat selected option as e.g., [text color, CYAN]
+        :param selected: a string holding the user's choice, e.g., '3'
+                         may be '' to represent the default option
+        :return: the reformatted selection
         Called by: self.run()
         """
-        # self.description is a string describing the current menu
-        # e.g., 'text color'
         if selected:
+            # self.description: e.g., 'text color'
             self.reformatted_selection = [self.description]
-            # self.entries is a list of tuples
-            # each tuple holds strings
-            for ix, entry in enumerate(self.entries[int(selected)]):
-                # replace the trailing ' (*)' in the default selection
-                if ix == 1 and '*' in entry:
-                    short_entry = entry.rstrip(' ()*')
-                    self.reformatted_selection += [short_entry]
+            for ix, item in enumerate(self.entries[int(selected)]):
+                if ix == 1 and item.endswith(' (*)'):
+                    # the default item has been selected by its number
+                    self.reformatted_selection += [item.rstrip(' ()*')]
                 else:
-                    self.reformatted_selection += [entry]
+                    # a non-default item has been selected
+                    self.reformatted_selection += item
         else:
+            # the default item has been selected by pressing <Enter>
             self.reformatted_selection = [self.description] + self.default
 
 
