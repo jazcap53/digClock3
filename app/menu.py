@@ -40,8 +40,9 @@ class CycleMenus(object):
     def send_choice(self, choice):
         """
         Callback handed to Menu object.
-        Retrieves the user's menu selection.
-        :param choice:
+        Retrieves the user's menu selection, formatted appropriately
+        for the CycleMenus class.
+        :param choice: will hold the user's menu selection
         :return: None
         """
         self.chosen.append(choice)
@@ -50,25 +51,25 @@ class CycleMenus(object):
 # TODO: prepend '_' to 'private' data member names ?
 class Menu(object):
     """
-    Class provided: an interactive menu presented to user
+    Class provided: an interactive menu presented to the user.
     The menu shows options (with the default option marked by an
     asterisk) and gets the user's choice.
-    Instantiated by global function cycle_menus()
+    Instantiated by CycleMenus().
     """
     def __init__(self, source, chosen, headr, msg, footr, send_choice):
-        self.source = source
-        self.header = headr
-        self.message = msg
-        self.footer = footr
+        self.source = source            # a list of options from menu_data.menu_list
+        self.chosen = chosen[:]         # the user's selections so far
+        self.header = headr             # displayed at the top of the menu
+        self.message = msg              # displayed below the header
+        self.footer = footr             # displayed by raw_input()
+        self.send_choice = send_choice  # callback to CycleMenus()
         self.description = None
-        self.entries = [('', '', '')]  # make self.entries 1-indexed
+        self.entries = [('', '', '')]   # make self.entries 1-indexed
         self.default = None
         self.selection = None
         self.reformatted_selection = None
         self.bad_combinations = menu_data.bad_combinations
-        self.chosen = chosen[:]
         self.err_msg = None
-        self.send_choice = send_choice
 
     def run(self):
         """
@@ -77,6 +78,7 @@ class Menu(object):
             get and validate the user response
             reformat that response
             send response back to CycleMenus object
+        :return: None
         Called by: CycleMenus.cycle()
         """
         self.read()
@@ -88,22 +90,25 @@ class Menu(object):
 
     def read(self):
         """
-        Reads the menu data
+        Read the options for the current menu.
+        :return: None
         Called by: self.run()
         """
         for ix, item in enumerate(self.source):
-            if ix == 0:
+            if ix == 0:  # self.source[0] is menu description, e.g., 'text color'
                 self.description = item[:]
             else:
                 self.entries.append(item[:])
-                # remove trailing ' (*)' from default selection
+                # item example: ('2', 'BLUE', '\x1b[34m')
                 if item[1] and item[1].endswith(' (*)'):
+                    # default item example: ('3', 'LIGHT CYAN (*)', '\x1b[96m')
                     self.default = list(item)
                     self.default[1] = self.default[1].rstrip(' ()*')
 
     def display(self):
         """
-        Present current menu to the user.
+        Present the current menu to the user.
+        :return: None
         Called by: self.run()
         """
         clear_screen()
@@ -116,6 +121,11 @@ class Menu(object):
             print('Your {}: {}'.format(item[0], item[2]))
 
     def get_valid_selection(self):
+        """
+        Call subroutines to get and validate a selection from the user
+        :return: None
+        Called by: self.run()
+        """
         while True:  # loop until user makes a valid selection
             self.selection = None
             self.get_selection()
@@ -136,6 +146,7 @@ class Menu(object):
     def get_selection(self):
         """
         Get the user selection.
+        :return: None
         Called by: self.run()
         """
         self.selection = raw_input('\n\n' + self.footer + ' ')
@@ -167,10 +178,11 @@ class Menu(object):
     def good_combination(self):
         """
         Checks for validity of *combinations* of selections.
+        E.g., a blue text color on a blue background will be rejected.
         :return: True if combination of inputs so far is valid
                  False otherwise
         """
-        if not self.selection:  # self.selection has already been strip()ped
+        if not self.selection:  # user simply pressed <Enter>
             new_value = self.get_current_default()
         else:
             selection_int = int(self.selection)
@@ -185,11 +197,18 @@ class Menu(object):
         return True
 
     def get_current_default(self):
+        """
+        Get the default option for the current menu.
+        :return: The default option as an integer
+        Called by: self.good_combination()
+        """
         return int(self.default[0])
 
     def print_err_msg(self):
         """
-        Called by: self.run()
+        Display the current error message and sleep for 2 seconds.
+        :return: None
+        Called by: self.get_valid_selection()
         """
         print('\033[41m')  # red background
         print(self.err_msg)
@@ -199,7 +218,8 @@ class Menu(object):
 
     def reformat_selection(self, selected):
         """
-        Reformat option selected by user
+        Convert option selected by user into a format usable by
+        CycleMenus.
         :param selected: a string holding the user's choice (e.g., '3')
                          -- may be '' to represent the default option
         :return:
