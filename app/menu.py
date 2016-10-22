@@ -153,8 +153,8 @@ class Menu(object):
 
     def validate_selection(self):
         """
-        Checks that user input represents an integer in the correct
-        range, or is a null string.
+        Checks that the input string represents an integer in the
+        correct range, or is empty.
         :return: True on good input
                  False otherwise
         Called by: self.run()
@@ -164,8 +164,7 @@ class Menu(object):
         self.selection = self.selection.strip()
         if self.selection:
             try:
-                sel_as_int = int(self.selection)
-                if 0 < sel_as_int < menu_len:
+                if 0 < int(self.selection) < menu_len:
                     ret = True
                 else:
                     self.err_msg = '\n\nSorry. Value entered is out of range.'
@@ -181,6 +180,7 @@ class Menu(object):
         E.g., a blue text color on a blue background will be rejected.
         :return: True if combination of inputs so far is valid
                  False otherwise
+        Called by: self.get_valid_selection()
         """
         if not self.selection:  # user simply pressed <Enter>
             new_value = self.get_current_default()
@@ -233,7 +233,7 @@ class Menu(object):
                     self.reformatted_selection += [item.rstrip(' ()*')]
                 else:
                     # a non-default item has been selected
-                    self.reformatted_selection += item
+                    self.reformatted_selection.append(item)
         else:
             # the default item has been selected by pressing <Enter>
             self.reformatted_selection = [self.description] + self.default
