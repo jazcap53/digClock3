@@ -34,7 +34,6 @@ class CycleMenus(object):
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
         _ = raw_input('\n\nPress \'Enter\' to start clock...')
-        # TODO: replace with callback in DigClock?
         return self.chosen  # to DigClock.set_menu_option()
 
     def send_choice(self, choice):

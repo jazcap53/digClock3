@@ -127,18 +127,6 @@ class DigClock(object):
             # present the menus and get the choices
             self.chosen = CycleMenus().cycle()
 
-
-    # TODO: implement this callback ?
-    # possible callback to retrieve user choices from CycleMenus
-    def cycle_menus_callback(self, user_choice):
-        """
-        N.Y.I.
-        :return:
-        """
-        pass
-
-
-
     def get_cur_time_str(self):
         """
         Get a formatted time string with current time
