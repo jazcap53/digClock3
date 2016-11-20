@@ -6,7 +6,7 @@ This is a (fully functional) work in progress. It is being refactored for testab
 
 Dig, Clock! is a menu-driven digital clock, written in Python 2.7, that runs in a Linux terminal. This version can play the Westminster Chimes on every quarter hour.
 
-A full suite of tests is included.
+A full suite of unit tests is included.
 
 ## Features
 
