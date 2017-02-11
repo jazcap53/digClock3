@@ -36,3 +36,6 @@ class TestDigClock(unittest.TestCase):
             self.clock_test.set_menu_option()
             self.clock_test.set_cur_time()
             self.assertEqual(time.strftime('%H:%M:%S', self.clock_test.cur_time), '22:27:14')
+
+    def test_run_clock_runs(self):
+        pass
