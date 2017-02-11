@@ -19,6 +19,7 @@ Python 2.7 -- available via your package manager
 PortAudio v19 -- available via your package manager  
 PyAudio -- available at https://pypi.python.org/pypi/PyAudio  
 PySynth -- available as PySynth-1.1.tar.gz from http://mdoege.github.io/PySynth  
+Mock 2.0 -- available with ```pip install mock```
 
 ## Install and run
 Download ```digClock2.tar.gz```.  
