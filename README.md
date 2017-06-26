@@ -21,9 +21,9 @@ PyAudio -- available at https://pypi.python.org/pypi/PyAudio
 PySynth -- available as PySynth-1.1.tar.gz from http://mdoege.github.io/PySynth  
 
 ## Install and run
-Download ```digClock2.tar.gz```.  
-Run ```$ tar xvfz ./digClock2.tar.gz```.  
-Run ```$ python dig_clock_2.py```.  
+Download ```digClock2.tar.gz```  
+Run ```$ tar xvfz ./digClock2.tar.gz```  
+Run ```$ python dig_clock_2.py```  
 
 ## License
-CC0, Creative Commons Zero, released into the public domain
+CC0, Creative Commons Zero, released into the public domain.
