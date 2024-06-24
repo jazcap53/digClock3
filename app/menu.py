@@ -33,7 +33,7 @@ class CycleMenus(object):
         clear_screen()
         for item in self.chosen:  # self.chosen is empty for first menu
             print('Your {}: {}'.format(item[0], item[2]))
-        _ = raw_input('\n\nPress \'Enter\' to start clock...')
+        _ = input('\n\nPress \'Enter\' to start clock...')
         return self.chosen  # to DigClock.set_menu_option()
 
     def send_choice(self, choice):
@@ -60,7 +60,7 @@ class Menu(object):
         self.chosen = chosen[:]         # the user's selections so far
         self.header = headr             # displayed at the top of the menu
         self.message = msg              # displayed below the header
-        self.footer = footr             # displayed by raw_input()
+        self.footer = footr             # displayed by input()
         self.send_choice = send_choice  # callback to CycleMenus()
         self.description = None
         self.entries = [('', '', '')]   # make self.entries 1-indexed
@@ -148,7 +148,7 @@ class Menu(object):
         :return: None
         Called by: self.run()
         """
-        self.selection = raw_input('\n\n' + self.footer + ' ')
+        self.selection = input('\n\n' + self.footer + ' ')
 
     def validate_selection(self):
         """
