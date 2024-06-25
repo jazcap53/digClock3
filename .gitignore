@@ -6,3 +6,4 @@ simple_play_wave.py
 *.sw?
 *.?ml
 .idea
+ai_instructions.txt

@@ -5,7 +5,7 @@ import os
 
 from mock import patch
 
-from app.dig_clock_2 import DigClock
+from app.dig_clock_3 import DigClock
 import app.menu
 
 

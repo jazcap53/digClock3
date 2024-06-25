@@ -1,5 +1,5 @@
 """
-This is the top-level file for DigClock2.
+This is the top-level file for DigClock3.
 
 For documentation of wave, see
 https://docs.python.org/2/library/wave.html
