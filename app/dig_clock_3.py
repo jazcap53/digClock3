@@ -12,7 +12,9 @@ from __future__ import print_function
 import os
 import time
 import argparse
+import threading
 
+from playsound import playsound, PlaysoundException
 import pyaudio
 import wave
 
@@ -46,14 +48,11 @@ class DigClock(object):
                 ['chime mode', ' 1', 'CHIME']]  # default menu choices
 
     def __init__(self):
-        self.w_f = None            # .wav file
-        self.stream = None         # stream to which wave file is output
-        self.face = None           # clock face
-        self.p_aud = None          # instance of PyAudio
-        self.chosen = None         # menu choices
-        self.cur_time = None       # current time as time.struct_tm
-        self.arg_parser = None     # argument parser object
-        self.args = None           # c. l. arguments
+        self.face = None  # clock face
+        self.chosen = None  # menu choices
+        self.cur_time = None  # current time as time.struct_tm
+        self.arg_parser = None  # argument parser object
+        self.args = None  # c. l. arguments
         self.secs_since_start = 0
 
     def run_clock(self):
@@ -69,9 +68,6 @@ class DigClock(object):
             print(BOLD)
             print(self.chosen[0][3])  # set text color
             print(self.chosen[1][3])  # set background color
-            # PyAudio provides Python bindings for PortAudio audio i/o library
-            if self.chosen[3][2] == 'CHIME':
-                self.p_aud = pyaudio.PyAudio()
             while True:
                 self.set_cur_time()
                 self.get_cur_time_str()
@@ -83,9 +79,7 @@ class DigClock(object):
         finally:
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
-            if self.p_aud is not None:
-                self.p_aud.terminate()
-            os.system('clear')
+            print("\033[H\033[J", end="")
 
     def read_switches(self):
         """
@@ -143,7 +137,7 @@ class DigClock(object):
         :return: None
         Called by: self.run_clock()
         """
-        os.system('clear')
+        print("\033[H\033[J", end="")
         self.print_digits()
         if self.chosen[2][2] == '12-HOUR':
             self.print_am_pm()
@@ -227,27 +221,19 @@ class DigClock(object):
         :return: None
         Called by: self.run_clock()
         """
-        self.w_f = wave.open(chime_file_name, 'rb')
-        self.stream = self.p_aud.open(
-                # PyAudio parameters
-                format=self.p_aud.get_format_from_width(self.w_f.getsampwidth()),
-                channels=self.w_f.getnchannels(),
-                rate=self.w_f.getframerate(),
-                output=True,
-                # callback function is executed in a separate thread
-                stream_callback=self.callback)
-        self.stream.start_stream()
+        sound_thread = threading.Thread(target=playsound, args=(chime_file_name,))
+        sound_thread.start()
+
         self.print_face()
-        while True:
-            if not self.stream.is_active():
+        while sound_thread.is_alive():
+            try:
+                self.await_new_sec()
+                self.set_cur_time()
+                self.get_cur_time_str()
+                self.print_face()
+            except PlaysoundException:
+                # Handle any exceptions raised by playsound
                 break
-            self.await_new_sec()
-            self.set_cur_time()
-            self.get_cur_time_str()
-            self.print_face()
-        self.stream.stop_stream()
-        self.stream.close()
-        self.w_f.close()
 
     def await_new_sec(self):
         """
