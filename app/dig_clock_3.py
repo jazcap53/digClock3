@@ -108,6 +108,8 @@ class DigClock(object):
 
     def set_cur_time(self):
         if self.args.a:
+            if self.face and self.face.lstrip() == '00:00:00':
+                return
             self.cur_time = time.localtime(self.args.a - self.secs_since_start)
         elif self.args.t:
             self.cur_time = time.localtime(self.args.t + self.secs_since_start)
