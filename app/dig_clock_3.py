@@ -8,7 +8,6 @@ For documentation of PyAudio, see
 https://people.csail.mit.edu/hubert/pyaudio/docs/i\
 #example-callback-mode-audio-i-o
 """
-from __future__ import print_function
 import os
 import time
 import argparse
@@ -72,9 +71,14 @@ class DigClock(object):
                 self.set_cur_time()
                 self.get_cur_time_str()
                 self.print_face()
-                chime_file_name = self.check_for_chimes()
-                if chime_file_name is not None:  # we should play a chime now
-                    self.play_chime(chime_file_name)
+                if not self.args.a:  # skip chime check in alarm mode
+                    chime_file_name = self.check_for_chimes()
+                    if chime_file_name is not None:  # we should play a chime now
+                        self.play_chime(chime_file_name)
+                if self.check_for_alarm():
+                    self.play_chime('app/chimes/alarm.wav')
+                    while True:
+                        pass  # wait for termination signal
                 self.await_new_sec()
         finally:
             print(ENDC)
@@ -96,27 +100,26 @@ class DigClock(object):
                                      help='test mode: start clock from given time'
                                           ' (in 24-hour HH:MM:SS format)',
                                           action=ParseTime)
+        self.arg_parser.add_argument('-a', metavar='alarmstring', type=str,
+                                     help='alarm mode: start clock from given time'
+                                          ' (in 24-hour HH:MM:SS format) and play alarm at 00:00:00',
+                                     action=ParseTime)
         self.args = self.arg_parser.parse_args()
 
     def set_cur_time(self):
-        """
-        Set current time according to -t switch
-        :return: None
-        Called by: self.run_clock(), self.play_chime()
-        """
-        if self.args.t:
+        if self.args.a:
+            self.cur_time = time.localtime(self.args.a - self.secs_since_start)
+        elif self.args.t:
             self.cur_time = time.localtime(self.args.t + self.secs_since_start)
         else:
             self.cur_time = time.localtime()
 
     def set_menu_option(self):
-        """
-        Set menu option according to -d switch
-        :return: None
-        Called by: self.run_clock()
-        """
-        if self.args.d:
+        if self.args.d or self.args.a:
             self.chosen = self.DEFAULTS
+            if self.args.a:
+                self.chosen[2][2] = '24-HOUR'  # overwrite display mode to 24-HOUR in alarm mode
+                self.chosen[3][2] = 'SILENT'  # overwrite chime mode to SILENT in alarm mode
         else:
             # present the menus and get the choices
             self.chosen = CycleMenus().cycle()
@@ -171,6 +174,11 @@ class DigClock(object):
             print(' ' * 83 + nums.dblHorizRUp + ' ' + nums.dbl3Vert)
             print(' ' * 83 + nums.dblLVert + ' ' + nums.dbl3Vert)
 
+    def check_for_alarm(self):
+        if self.args.a and self.face.lstrip() == '00:00:00':
+            return True
+        return False
+
     def check_for_chimes(self):
         """
         Check whether a sound should begin playing now
@@ -180,7 +188,7 @@ class DigClock(object):
                      None
         Called by: self.run_clock()
         """
-        if self.chosen[3][2] == 'SILENT':  # if chimes are off
+        if self.chosen[3][2] == 'SILENT' or self.args.a:  # if chimes are off or in alarm mode
             return None
         chime_file_name = None
         hrs, mins, secs = self.face.lstrip().split(':')
