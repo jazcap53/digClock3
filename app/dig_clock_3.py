@@ -1,12 +1,5 @@
 """
 This is the top-level file for DigClock3.
-
-For documentation of wave, see
-https://docs.python.org/2/library/wave.html
-
-For documentation of PyAudio, see
-https://people.csail.mit.edu/hubert/pyaudio/docs/i\
-#example-callback-mode-audio-i-o
 """
 import os
 import time
@@ -14,8 +7,6 @@ import argparse
 import threading
 
 from playsound import playsound, PlaysoundException
-import pyaudio
-import wave
 
 import nums
 from menu import CycleMenus
@@ -255,14 +246,6 @@ class DigClock(object):
         while time.strftime('%S') == old_secs:
             time.sleep(.01)
         self.secs_since_start += 1
-
-    def callback(self, in_data, frame_count, time_info, status):
-        """
-        Return a chunk of audio data, and whether there is more data
-        Called by: PyAudio instance
-        """
-        data = self.w_f.readframes(frame_count)
-        return data, pyaudio.paContinue
 
 
 if __name__ == '__main__':
