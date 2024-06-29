@@ -5,12 +5,16 @@ import os
 import time
 import argparse
 import threading
-
-from playsound import playsound, PlaysoundException
+import pygame
+import sys
+import select
 
 import nums
 from menu import CycleMenus
 from args_actions import ParseTime
+
+
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 
 ENDC = '\033[0m'
@@ -44,13 +48,12 @@ class DigClock(object):
         self.arg_parser = None  # argument parser object
         self.args = None  # c. l. arguments
         self.secs_since_start = 0
+        pygame.init()
+        pygame.mixer.init()
+        self.current_sound = None
+        self.stop_sound_flag = False
 
     def run_clock(self):
-        """
-        Run the clock and chimes
-        :return: None
-        Called by: client code
-        """
         self.read_switches()
         self.set_menu_option()
         try:
@@ -68,13 +71,17 @@ class DigClock(object):
                         self.play_chime(chime_file_name)
                 if self.check_for_alarm():
                     self.play_chime('app/chimes/alarm.wav')
-                    while True:
-                        pass  # wait for termination signal
-                self.await_new_sec()
+                    while pygame.mixer.get_busy():
+                        if self.check_for_input():
+                            self.stop_sound()
+                            break
+                        self.update_clock()
+                self.update_clock()
         finally:
             print(ENDC)
             os.system('tput cnorm')  # restore normal cursor
             print("\033[H\033[J", end="")
+            pygame.quit()
 
     def read_switches(self):
         """
@@ -216,25 +223,37 @@ class DigClock(object):
             return hrs_as_str
 
     def play_chime(self, chime_file_name):
-        """
-        Play an audio file
-        :param chime_file_name: the name of a .wav file to play
-        :return: None
-        Called by: self.run_clock()
-        """
-        sound_thread = threading.Thread(target=playsound, args=(chime_file_name,))
-        sound_thread.start()
+        self.stop_sound()  # Stop any currently playing sound
+        self.current_sound = pygame.mixer.Sound(chime_file_name)
+        self.current_sound.play()
+        self.stop_sound_flag = False
 
+        chime_thread = threading.Thread(target=self.monitor_chime)
+        chime_thread.start()
+
+    def monitor_chime(self):
+        while pygame.mixer.get_busy() and not self.stop_sound_flag:
+            if self.check_for_input():
+                self.stop_sound()
+            time.sleep(0.1)
+
+    def stop_sound(self):
+        if self.current_sound:
+            self.current_sound.stop()
+            self.current_sound = None
+        self.stop_sound_flag = True
+
+    def update_clock(self):
+        self.await_new_sec()
+        self.set_cur_time()
+        self.get_cur_time_str()
         self.print_face()
-        while sound_thread.is_alive():
-            try:
-                self.await_new_sec()
-                self.set_cur_time()
-                self.get_cur_time_str()
-                self.print_face()
-            except PlaysoundException:
-                # Handle any exceptions raised by playsound
-                break
+
+    def check_for_input(self):
+        if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
+            line = sys.stdin.readline()
+            return line.strip() == ''
+        return False
 
     def await_new_sec(self):
         """
