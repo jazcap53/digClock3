@@ -8,6 +8,8 @@ import threading
 import pygame
 import sys
 import select
+import termios
+import tty
 
 import nums
 from menu import CycleMenus
@@ -52,34 +54,42 @@ class DigClock(object):
         pygame.mixer.init()
         self.current_sound = None
         self.stop_sound_flag = False
+        self.mute_sound = False  # New variable to mute sound
 
     def run_clock(self):
         self.read_switches()
         self.set_menu_option()
         try:
-            os.system('tput civis')   # make cursor invisible
+            os.system('tput civis')
             print(BOLD)
-            print(self.chosen[0][3])  # set text color
-            print(self.chosen[1][3])  # set background color
-            while True:
-                self.set_cur_time()
-                self.get_cur_time_str()
-                self.print_face()
-                if not self.args.a:  # skip chime check in alarm mode
-                    chime_file_name = self.check_for_chimes()
-                    if chime_file_name is not None:  # we should play a chime now
-                        self.play_chime(chime_file_name)
-                if self.check_for_alarm():
-                    self.play_chime('app/chimes/alarm.wav')
-                    while pygame.mixer.get_busy():
-                        if self.check_for_input():
-                            self.stop_sound()
-                            break
-                        self.update_clock()
-                self.update_clock()
+            print(self.chosen[0][3])
+            print(self.chosen[1][3])
+            old_settings = termios.tcgetattr(sys.stdin)
+            try:
+                tty.setcbreak(sys.stdin.fileno())
+                while True:
+                    self.set_cur_time()
+                    self.get_cur_time_str()
+                    self.print_face()
+                    if not self.args.a:
+                        chime_file_name = self.check_for_chimes()
+                        if chime_file_name is not None and not self.mute_sound:
+                            self.play_chime(chime_file_name)
+                    if self.check_for_alarm():
+                        self.play_chime('app/chimes/alarm.wav')
+                        while pygame.mixer.get_busy():
+                            if self.check_for_input():
+                                if self.mute_sound:
+                                    self.stop_sound()
+                                else:
+                                    self.mute_sound = True
+                            self.update_clock()
+                    self.update_clock()
+            finally:
+                termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
         finally:
             print(ENDC)
-            os.system('tput cnorm')  # restore normal cursor
+            os.system('tput cnorm')
             print("\033[H\033[J", end="")
             pygame.quit()
 
@@ -222,21 +232,6 @@ class DigClock(object):
             hrs_as_str = '{:02d}'.format(hrs_as_int)
             return hrs_as_str
 
-    def play_chime(self, chime_file_name):
-        self.stop_sound()  # Stop any currently playing sound
-        self.current_sound = pygame.mixer.Sound(chime_file_name)
-        self.current_sound.play()
-        self.stop_sound_flag = False
-
-        chime_thread = threading.Thread(target=self.monitor_chime)
-        chime_thread.start()
-
-    def monitor_chime(self):
-        while pygame.mixer.get_busy() and not self.stop_sound_flag:
-            if self.check_for_input():
-                self.stop_sound()
-            time.sleep(0.1)
-
     def stop_sound(self):
         if self.current_sound:
             self.current_sound.stop()
@@ -251,9 +246,29 @@ class DigClock(object):
 
     def check_for_input(self):
         if sys.stdin in select.select([sys.stdin], [], [], 0)[0]:
-            line = sys.stdin.readline()
-            return line.strip() == ''
+            char = sys.stdin.read(1)
+            if char == '\n':  # Enter key
+                self.mute_sound = not self.mute_sound
+            elif char == '\x1b':  # Escape sequence (e.g., Shift+Enter)
+                self.mute_sound = False
+            return True
         return False
+
+    def play_chime(self, chime_file_name):
+        if not self.mute_sound:
+            self.stop_sound()
+            self.current_sound = pygame.mixer.Sound(chime_file_name)
+            self.current_sound.play()
+
+        chime_thread = threading.Thread(target=self.monitor_chime)
+        chime_thread.start()
+
+    def monitor_chime(self):
+        while pygame.mixer.get_busy() and not self.mute_sound:
+            if self.check_for_input():
+                if self.mute_sound:
+                    self.stop_sound()
+            time.sleep(0.1)
 
     def await_new_sec(self):
         """
