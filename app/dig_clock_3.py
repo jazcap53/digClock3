@@ -44,17 +44,16 @@ class DigClock(object):
                 ['chime mode', ' 1', 'CHIME']]  # default menu choices
 
     def __init__(self):
-        self.face = None  # clock face
-        self.chosen = None  # menu choices
-        self.cur_time = None  # current time as time.struct_tm
-        self.arg_parser = None  # argument parser object
-        self.args = None  # c. l. arguments
+        self.face = None
+        self.chosen = None
+        self.cur_time = None
+        self.arg_parser = None
+        self.args = None
         self.secs_since_start = 0
         pygame.init()
         pygame.mixer.init()
         self.current_sound = None
-        self.stop_sound_flag = False
-        self.mute_sound = False  # New variable to mute sound
+        self.mute_sound = False  # Variable to mute sound
 
     def run_clock(self):
         self.read_switches()
@@ -76,14 +75,7 @@ class DigClock(object):
                         if chime_file_name is not None and not self.mute_sound:
                             self.play_chime(chime_file_name)
                     if self.check_for_alarm():
-                        self.play_chime('app/chimes/alarm.wav')
-                        while pygame.mixer.get_busy():
-                            if self.check_for_input():
-                                if self.mute_sound:
-                                    self.stop_sound()
-                                else:
-                                    self.mute_sound = True
-                            self.update_clock()
+                        self.play_alarm()
                     self.update_clock()
             finally:
                 termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
@@ -249,8 +241,6 @@ class DigClock(object):
             char = sys.stdin.read(1)
             if char == '\n':  # Enter key
                 self.mute_sound = not self.mute_sound
-            elif char == '\x1b':  # Escape sequence (e.g., Shift+Enter)
-                self.mute_sound = False
             return True
         return False
 
@@ -262,6 +252,15 @@ class DigClock(object):
 
         chime_thread = threading.Thread(target=self.monitor_chime)
         chime_thread.start()
+
+    def play_alarm(self):
+        self.play_chime('app/chimes/alarm.wav')
+        while pygame.mixer.get_busy():
+            if self.check_for_input():
+                if self.mute_sound:
+                    self.stop_sound()
+                    break
+            self.update_clock()
 
     def monitor_chime(self):
         while pygame.mixer.get_busy() and not self.mute_sound:
